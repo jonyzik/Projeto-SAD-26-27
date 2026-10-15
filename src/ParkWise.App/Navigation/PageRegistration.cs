@@ -80,16 +80,13 @@ public static class PageRegistration
                 "As definições da aplicação estão em desenvolvimento.",
                 ["Preferências da aplicação", "Gestão de conta e permissões"])));
 
-        services.AddSingleton<IPageRoute>(_ => new PageRoute(
+        services.AddSingleton<IPageRoute>(provider => new PageRoute(
             PageKeys.NewSimulation,
-            "Nova simulação",
-            "Nova simulação",
-            "Prepare uma nova análise de parques de ciência e tecnologia.",
+            "Configurar critérios AHP",
+            "Configurar critérios AHP",
+            "Defina a importância relativa dos nove critérios obrigatórios.",
             "\uE7C3",
-            () => new PlaceholderViewModel(
-                "Nova simulação",
-                "A criação de uma nova simulação está em desenvolvimento.",
-                ["Seleção de parques", "Preferências pelos nove critérios", "Análise AHP e custos"]),
+            () => provider.GetRequiredService<AhpCriteriaConfigurationViewModel>(),
             IsVisibleInSidebar: false,
             ParentMenuKey: PageKeys.Simulations));
 

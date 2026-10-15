@@ -20,6 +20,9 @@
             <DataTemplate DataType="{x:Type vm:ScienceParkComparisonViewModel}">
                 <views:ScienceParkComparisonView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AhpCriteriaConfigurationViewModel}">
+                <views:AhpCriteriaConfigurationView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:PlaceholderViewModel}">
                 <views:PlaceholderView />
             </DataTemplate>

@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <Border Background="#173C48" CornerRadius="10" Padding="16" Margin="0,0,0,18">
+            <Border Style="{StaticResource StatusBannerStyle}">
                 <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap" />
             </Border>
 
             <DockPanel Margin="0,0,0,18">
-                <Button DockPanel.Dock="Right" Content="Preparar simulação AHP"
+                <Button DockPanel.Dock="Right" Content="Configurar critérios AHP"
                         Command="{Binding StartSimulationCommand}" IsEnabled="{Binding CanPrepareSimulation}"
                         Style="{StaticResource ActionButtonStyle}" Margin="16,0,0,0" />
                 <Button DockPanel.Dock="Left" Content="← Voltar à pesquisa" Command="{Binding BackCommand}"
