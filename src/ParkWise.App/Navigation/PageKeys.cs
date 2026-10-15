@@ -4,6 +4,8 @@ public static class PageKeys
 {
     public const string Dashboard = "Dashboard";
     public const string ScienceParks = "ScienceParks";
+    public const string ScienceParkDetails = "ScienceParkDetails";
+    public const string ScienceParkComparison = "ScienceParkComparison";
     public const string Simulations = "Simulacoes";
     public const string NewSimulation = "NovaSimulacao";
     public const string History = "Historico";

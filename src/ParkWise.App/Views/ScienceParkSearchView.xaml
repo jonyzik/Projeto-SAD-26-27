@@ -1,0 +1,135 @@
+<UserControl x:Class="ParkWise.App.Views.ScienceParkSearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+            <Border Background="#173C48" CornerRadius="10" Padding="16" Margin="0,0,0,18">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="Atualizar" Command="{Binding RefreshCommand}"
+                            Style="{StaticResource ActionButtonStyle}" Margin="14,0,0,0" />
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource AccentBrush}"
+                               TextWrapping="Wrap" VerticalAlignment="Center" />
+                </DockPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="Pesquisar parques" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Nome" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,6" />
+                            <TextBox Text="{Binding NameQuery, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SearchInputStyle}" AutomationProperties.Name="Pesquisar por nome" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Localização" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,6" />
+                            <TextBox Text="{Binding LocationQuery, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SearchInputStyle}" AutomationProperties.Name="Pesquisar por localização" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Serviços disponíveis" Foreground="{StaticResource MutedBrush}" Margin="0,20,0,10" />
+                    <ItemsControl ItemsSource="{Binding ServiceFilters}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected}"
+                                          Style="{StaticResource ServiceCheckBoxStyle}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="Preço mensal por m² (€)" Foreground="{StaticResource MutedBrush}" Margin="0,10,0,10" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Mínimo" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,6" />
+                            <TextBox Text="{Binding MinimumPrice, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SearchInputStyle}" AutomationProperties.Name="Preço mínimo" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Máximo" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,6" />
+                            <TextBox Text="{Binding MaximumPrice, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SearchInputStyle}" AutomationProperties.Name="Preço máximo" />
+                        </StackPanel>
+                        <Button Grid.Column="3" Content="Limpar filtros" Command="{Binding ClearFiltersCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom" Margin="12,0,0,0" />
+                    </Grid>
+                    <TextBlock Text="{Binding FilterMessage}" Foreground="#FFB98B" Margin="0,10,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="{Binding ResultCountText}" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding SelectedCountText}" Foreground="{StaticResource AccentBrush}" Margin="0,5,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="Comparar selecionados" Command="{Binding OpenComparisonCommand}"
+                        Style="{StaticResource ActionButtonStyle}" Margin="12,0,0,0" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Nenhum parque corresponde aos filtros atuais." Foreground="{StaticResource MutedBrush}"
+                       Margin="0,0,0,12">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasNoResults}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <ItemsControl ItemsSource="{Binding Results}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,14,0">
+                                    <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding City}" Foreground="{StaticResource AccentBrush}" Margin="0,5,0,0" />
+                                    <TextBlock Text="{Binding Description}" Foreground="{StaticResource MutedBrush}"
+                                               TextWrapping="Wrap" Margin="0,10,0,0" />
+                                    <TextBlock Text="{Binding ServicesText}" Foreground="{StaticResource MutedBrush}" Margin="0,10,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding PriceText}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                    <CheckBox Content="Selecionar" IsChecked="{Binding IsSelected}"
+                                              Style="{StaticResource ServiceCheckBoxStyle}" Margin="0,14,0,12"
+                                              HorizontalAlignment="Right" />
+                                    <Button Content="Ver detalhes"
+                                            Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource SecondaryButtonStyle}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

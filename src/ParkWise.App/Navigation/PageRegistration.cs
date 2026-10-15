@@ -16,16 +16,36 @@ public static class PageRegistration
             () => provider.GetRequiredService<DashboardViewModel>(),
             () => provider.GetRequiredService<DashboardViewModel>().RefreshCommand.Execute(null)));
 
-        services.AddSingleton<IPageRoute>(_ => new PageRoute(
+        services.AddSingleton<IPageRoute>(provider => new PageRoute(
             PageKeys.ScienceParks,
             "Parques de Ciência",
             "Parques de Ciência e Tecnologia",
             "Explore alternativas para a instalação da sua empresa.",
             "\uE80D",
-            () => new PlaceholderViewModel(
-                "Parques de Ciência e Tecnologia",
-                "O catálogo e a pesquisa de parques estão em desenvolvimento.",
-                ["Pesquisa por localização e serviços", "Consulta dos nove critérios obrigatórios", "Seleção de parques para comparação"])));
+            () => provider.GetRequiredService<ScienceParkSearchViewModel>(),
+            () => provider.GetRequiredService<ScienceParkSearchViewModel>().RefreshCommand.Execute(null)));
+
+        services.AddSingleton<IPageRoute>(provider => new PageRoute(
+            PageKeys.ScienceParkDetails,
+            "Detalhes do parque",
+            "Detalhes do parque",
+            "Consulte os nove critérios obrigatórios e selecione o parque para comparar.",
+            "\uE80D",
+            () => provider.GetRequiredService<ScienceParkDetailsViewModel>(),
+            () => _ = provider.GetRequiredService<ScienceParkDetailsViewModel>().LoadAsync(),
+            IsVisibleInSidebar: false,
+            ParentMenuKey: PageKeys.ScienceParks));
+
+        services.AddSingleton<IPageRoute>(provider => new PageRoute(
+            PageKeys.ScienceParkComparison,
+            "Comparação preliminar",
+            "Comparação preliminar",
+            "Veja os parques selecionados lado a lado antes da futura simulação AHP.",
+            "\uE80D",
+            () => provider.GetRequiredService<ScienceParkComparisonViewModel>(),
+            () => _ = provider.GetRequiredService<ScienceParkComparisonViewModel>().LoadAsync(),
+            IsVisibleInSidebar: false,
+            ParentMenuKey: PageKeys.ScienceParks));
 
         services.AddSingleton<IPageRoute>(_ => new PageRoute(
             PageKeys.Simulations,

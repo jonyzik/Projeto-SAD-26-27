@@ -3,7 +3,7 @@ using ParkWise.App.Navigation;
 
 namespace ParkWise.App.ViewModels;
 
-public sealed class MainWindowViewModel : ViewModelBase
+public sealed class MainWindowViewModel : ViewModelBase, IPageNavigation
 {
     private readonly IReadOnlyDictionary<string, IPageRoute> _routes;
     private object _currentPage;
@@ -24,7 +24,11 @@ public sealed class MainWindowViewModel : ViewModelBase
             .Select(route => new NavigationItemViewModel(route.Key, route.MenuLabel, route.Icon))
             .ToArray();
         SetActiveItem(PageKeys.Dashboard);
-        NavigateCommand = new RelayCommand(Navigate);
+        NavigateCommand = new RelayCommand(parameter =>
+        {
+            var key = parameter is NavigationItemViewModel item ? item.Key : parameter as string;
+            if (key is not null) NavigateTo(key);
+        });
     }
 
     public IReadOnlyList<NavigationItemViewModel> NavigationItems { get; }
@@ -51,10 +55,9 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public void ActivateCurrentPage() => _routes[_currentKey].OnNavigated();
 
-    private void Navigate(object? parameter)
+    public void NavigateTo(string key)
     {
-        var key = parameter is NavigationItemViewModel item ? item.Key : parameter as string;
-        if (key is null || !_routes.TryGetValue(key, out var route)) return;
+        if (!_routes.TryGetValue(key, out var route)) return;
 
         _currentKey = key;
         CurrentTitle = route.Title;

@@ -1,0 +1,65 @@
+<UserControl x:Class="ParkWise.App.Views.ScienceParkComparisonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+            <Border Background="#173C48" CornerRadius="10" Padding="16" Margin="0,0,0,18">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap" />
+            </Border>
+
+            <DockPanel Margin="0,0,0,18">
+                <Button DockPanel.Dock="Right" Content="Preparar simulação AHP"
+                        Command="{Binding StartSimulationCommand}" IsEnabled="{Binding CanPrepareSimulation}"
+                        Style="{StaticResource ActionButtonStyle}" Margin="16,0,0,0" />
+                <Button DockPanel.Dock="Left" Content="← Voltar à pesquisa" Command="{Binding BackCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+            </DockPanel>
+
+            <TextBlock Text="{Binding CountText}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,8" />
+            <TextBlock Text="Selecione pelo menos dois parques para avançar para a futura simulação."
+                       Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,0,0,18" />
+
+            <TextBlock Text="Ainda não selecionou parques. Volte à pesquisa para escolher alternativas."
+                       Foreground="{StaticResource MutedBrush}" Margin="0,0,0,18" TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasNoParks}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <ItemsControl ItemsSource="{Binding Parks}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardStyle}" Width="316" Margin="0,0,14,14">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding City}" Foreground="{StaticResource AccentBrush}" Margin="0,6,0,0" />
+                                <TextBlock Text="{Binding PriceText}" FontWeight="SemiBold" Margin="0,14,0,18" TextWrapping="Wrap" />
+                                <ItemsControl ItemsSource="{Binding Criteria}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,0,12">
+                                                <TextBlock Text="{Binding Name}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Value}" Foreground="{StaticResource TextBrush}"
+                                                           Margin="0,3,0,0" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

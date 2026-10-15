@@ -10,7 +10,8 @@ O ParkWise será uma aplicação desktop Windows para apoiar a escolha de parque
 - Dashboard com quatro indicadores calculados por um serviço da camada Application, parques recentes, últimas simulações, ação rápida para abrir Simulações e gráfico simples por intervalos de preço.
 - Sem ligação configurada, a dashboard usa **dados fictícios**, identificados na interface. Com ligação configurada, lê a base de dados através de EF Core; se a leitura falhar, apresenta um erro em vez de números fictícios.
 - Entidades fundamentais e `DbContext` preparados para SQL Server Express. Não há migrações nem criação automática da base de dados.
-- Os menus Parques de Ciência, Simulações, Histórico e Definições apresentam ecrãs informativos. «Parques de Ciência» corresponde ao módulo Science Parks. O botão «Nova simulação» abre uma página própria de criação em desenvolvimento. Autenticação, importação XML/XSD, AHP, custos, exportação e módulos adicionais ainda não estão implementados.
+- «Parques de Ciência» inclui pesquisa por nome e localização, filtros por serviços e preço, detalhes com os nove critérios e seleção para comparação descritiva. Os seis parques do catálogo são **fictícios** e identificados na interface. A ligação ao serviço real de parques ainda não existe; a dashboard usa uma fonte de demonstração independente, pelo que os seus indicadores não representam este catálogo.
+- Simulações, Histórico e Definições continuam com ecrãs informativos. A comparação preliminar oferece uma ligação para a página provisória «Nova simulação» quando há pelo menos dois parques selecionados. Autenticação, importação XML/XSD, AHP, custos, exportação e módulos adicionais ainda não estão implementados.
 
 ### Regras dos indicadores
 
@@ -39,7 +40,7 @@ dotnet run --project src/ParkWise.App/ParkWise.App.csproj
 
 Também é possível abrir `ParkWise.sln` no Visual Studio e definir `ParkWise.App` como projeto de arranque. O SDK e os pacotes NuGet são necessários para restaurar, compilar e testar. A conexão SQL Server é opcional nesta fase. A configuração de `DbContext` apenas regista o fornecedor quando `PARKWISE_SQLSERVER_CONNECTION` está definida; não executa migrações. Uma connection string definida seleciona a fonte EF Core; a dashboard requer então uma base de dados acessível e o esquema correspondente.
 
-Em Linux, os testes das camadas Core e Application podem ser executados com `dotnet test tests/ParkWise.Tests/ParkWise.Tests.csproj` **se o SDK .NET 10 estiver instalado**. A aplicação WPF não pode ser executada em Linux; a compilação cruzada poderá depender da obtenção dos pacotes de targeting do Windows. Nesta sessão, o SDK `dotnet` não estava instalado, pelo que a compilação, os testes unitários e a interface WPF ficaram por validar em execução. Confirmar a aplicação num Windows antes de a considerar testada.
+Em Linux, os testes das camadas Core e Application podem ser executados com `dotnet test tests/ParkWise.Tests/ParkWise.Tests.csproj` **se o SDK .NET 10 estiver instalado**. A aplicação WPF só pode ser executada em Windows; a compilação cruzada poderá depender da obtenção dos pacotes de targeting do Windows.
 
 ## Organização
 
@@ -47,9 +48,9 @@ Em Linux, os testes das camadas Core e Application podem ser executados com `dot
 | --- | --- |
 | `src/ParkWise.App` | WPF, Views, ViewModels, contrato de rotas e composição de dependências |
 | `src/ParkWise.Core` | Entidades, enumerações e catálogo dos critérios obrigatórios |
-| `src/ParkWise.Application` | Contratos e serviço de cálculo dos indicadores da dashboard |
+| `src/ParkWise.Application` | Contratos e serviço de cálculo da dashboard; pesquisa e seleção de parques |
 | `src/ParkWise.Infrastructure` | EF Core, SQL Server e fontes de dados reais ou de demonstração para a dashboard |
-| `tests/ParkWise.Tests` | Testes unitários dos critérios e dos cálculos da dashboard |
+| `tests/ParkWise.Tests` | Testes unitários dos critérios, dashboard, pesquisa, filtros e seleção |
 | `docs` | Notas de arquitetura e planeamento |
 | `database` | Futuras migrações e documentação da base de dados |
 

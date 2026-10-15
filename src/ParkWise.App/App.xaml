@@ -11,6 +11,15 @@
             <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
                 <views:DashboardView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ScienceParkSearchViewModel}">
+                <views:ScienceParkSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ScienceParkDetailsViewModel}">
+                <views:ScienceParkDetailsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ScienceParkComparisonViewModel}">
+                <views:ScienceParkComparisonView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:PlaceholderViewModel}">
                 <views:PlaceholderView />
             </DataTemplate>
