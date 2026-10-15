@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ParkWise.Application.Abstractions;
+using ParkWise.Application.Dashboard;
+using ParkWise.Infrastructure.Dashboard;
 using ParkWise.Infrastructure.Persistence;
 
 namespace ParkWise.Infrastructure;
@@ -12,8 +14,13 @@ public static class DependencyInjection
     {
         if (!string.IsNullOrWhiteSpace(connectionString))
         {
-            services.AddDbContext<ParkWiseDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContextFactory<ParkWiseDbContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IParkWiseDbContext>(provider => provider.GetRequiredService<ParkWiseDbContext>());
+            services.AddSingleton<IDashboardDataSource, EfDashboardDataSource>();
+        }
+        else
+        {
+            services.AddSingleton<IDashboardDataSource, DemoDashboardDataSource>();
         }
 
         return services;

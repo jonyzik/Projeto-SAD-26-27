@@ -1,6 +1,8 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using ParkWise.App.ViewModels;
+using ParkWise.App.Navigation;
+using ParkWise.Application.Dashboard;
 using ParkWise.Infrastructure;
 
 namespace ParkWise.App;
@@ -14,7 +16,9 @@ public partial class App : System.Windows.Application
         base.OnStartup(e);
 
         var registrations = new ServiceCollection();
+        registrations.AddSingleton<IDashboardService, DashboardService>();
         registrations.AddSingleton<DashboardViewModel>();
+        registrations.AddParkWisePages();
         registrations.AddSingleton<MainWindowViewModel>();
         registrations.AddSingleton<MainWindow>();
         registrations.AddParkWiseInfrastructure(
@@ -23,6 +27,7 @@ public partial class App : System.Windows.Application
         _services = registrations.BuildServiceProvider();
         var window = _services.GetRequiredService<MainWindow>();
         window.Show();
+        _services.GetRequiredService<MainWindowViewModel>().ActivateCurrentPage();
     }
 
     protected override void OnExit(ExitEventArgs e)
