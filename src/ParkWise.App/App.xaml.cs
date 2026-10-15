@@ -1,9 +1,12 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using ParkWise.App.ViewModels;
 using ParkWise.App.Navigation;
 using ParkWise.Application.Dashboard;
 using ParkWise.Infrastructure;
+using ParkWise.Application.ScienceParks;
+using ParkWise.App.Demo;
 
 namespace ParkWise.App;
 
@@ -18,11 +21,22 @@ public partial class App : System.Windows.Application
         var registrations = new ServiceCollection();
         registrations.AddSingleton<IDashboardService, DashboardService>();
         registrations.AddSingleton<DashboardViewModel>();
+        registrations.AddSingleton<IScienceParkCatalog, DemoScienceParkCatalog>();
+        registrations.AddSingleton<ScienceParkSelection>();
+        registrations.AddSingleton<ScienceParkPageState>();
+        registrations.AddSingleton<ScienceParkSearchViewModel>();
+        registrations.AddSingleton<ScienceParkDetailsViewModel>();
+        registrations.AddSingleton<ScienceParkComparisonViewModel>();
+        registrations.AddSingleton<AhpCriteriaConfigurationViewModel>();
         registrations.AddParkWisePages();
         registrations.AddSingleton<MainWindowViewModel>();
+        registrations.AddSingleton<IPageNavigation>(provider => provider.GetRequiredService<MainWindowViewModel>());
         registrations.AddSingleton<MainWindow>();
-        registrations.AddParkWiseInfrastructure(
-            Environment.GetEnvironmentVariable("PARKWISE_SQLSERVER_CONNECTION"));
+        var connectionString = Environment.GetEnvironmentVariable("PARKWISE_SQLSERVER_CONNECTION");
+        registrations.AddParkWiseInfrastructure(connectionString);
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+            registrations.Replace(ServiceDescriptor.Singleton<IDashboardDataSource, DemoCatalogDashboardDataSource>());
 
         _services = registrations.BuildServiceProvider();
         var window = _services.GetRequiredService<MainWindow>();

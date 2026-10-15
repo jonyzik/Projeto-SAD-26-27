@@ -1,0 +1,211 @@
+<UserControl x:Class="ParkWise.App.Views.AhpCriteriaConfigurationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ParkWise.App.ViewModels">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+            <Border Style="{StaticResource StatusBannerStyle}">
+                <StackPanel>
+                    <TextBlock Text="CONFIGURAÇÃO DOS CRITÉRIOS AHP" Foreground="{StaticResource AccentBrush}"
+                               FontSize="11" FontWeight="SemiBold" />
+                    <TextBlock Text="Compare a importância de dois critérios para a sua decisão. As respostas ficam guardadas nesta sessão até fechar a aplicação."
+                               TextWrapping="Wrap" Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,18">
+                <StackPanel>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Right" Text="{Binding ProgressText}" Foreground="{StaticResource AccentBrush}"
+                                   FontWeight="SemiBold" Margin="12,0,0,0" />
+                        <TextBlock Text="Progresso" FontSize="17" FontWeight="SemiBold" />
+                    </DockPanel>
+                    <ProgressBar Minimum="0" Maximum="{Binding TotalCount, Mode=OneWay}"
+                                 Value="{Binding AnsweredCount, Mode=OneWay}"
+                                 Foreground="{StaticResource AccentBrush}" Background="{StaticResource BorderBrush}"
+                                 Height="10" Margin="0,14,0,0" />
+                    <TextBlock Text="É preciso concluir as 36 comparações antes de avançar. Pode saltar uma pergunta e voltar depois."
+                               Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Visibility="{Binding IsQuestionStep, Converter={StaticResource BooleanToVisibility}}">
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,18">
+                    <StackPanel>
+                        <TextBlock Text="{Binding StepText}" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" />
+                        <TextBlock Text="Qual dos dois critérios é mais importante para a sua empresa?"
+                                   FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,10,0,20" />
+
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="18" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="{StaticResource BackgroundBrush}" CornerRadius="8" Padding="16">
+                                <StackPanel>
+                                    <TextBlock Text="CRITÉRIO DA ESQUERDA" Foreground="{StaticResource MutedBrush}" FontSize="10" />
+                                    <TextBlock Text="{Binding LeftCriterionName}" FontSize="17" FontWeight="SemiBold"
+                                               TextWrapping="Wrap" Margin="0,8,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Background="{StaticResource BackgroundBrush}" CornerRadius="8" Padding="16">
+                                <StackPanel>
+                                    <TextBlock Text="CRITÉRIO DA DIREITA" Foreground="{StaticResource MutedBrush}" FontSize="10" />
+                                    <TextBlock Text="{Binding RightCriterionName}" FontSize="17" FontWeight="SemiBold"
+                                               TextWrapping="Wrap" Margin="0,8,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <TextBlock Text="Escolha a direção da preferência" Foreground="{StaticResource MutedBrush}"
+                                   FontWeight="SemiBold" Margin="0,0,0,12" />
+                        <RadioButton GroupName="AhpPreference" IsChecked="{Binding PreferLeft, Mode=OneWay}"
+                                     Command="{Binding ChooseDirectionCommand}" CommandParameter="Left"
+                                     Style="{StaticResource AhpRadioButtonStyle}" AutomationProperties.Name="Critério da esquerda mais importante">
+                            <TextBlock Text="O critério da esquerda é mais importante" TextWrapping="Wrap" />
+                        </RadioButton>
+                        <RadioButton GroupName="AhpPreference" IsChecked="{Binding PreferEqual, Mode=OneWay}"
+                                     Command="{Binding ChooseDirectionCommand}" CommandParameter="Equal"
+                                     Style="{StaticResource AhpRadioButtonStyle}" AutomationProperties.Name="Igual importância">
+                            <TextBlock Text="Igual importância — valor 1" TextWrapping="Wrap" />
+                        </RadioButton>
+                        <RadioButton GroupName="AhpPreference" IsChecked="{Binding PreferRight, Mode=OneWay}"
+                                     Command="{Binding ChooseDirectionCommand}" CommandParameter="Right"
+                                     Style="{StaticResource AhpRadioButtonStyle}" AutomationProperties.Name="Critério da direita mais importante">
+                            <TextBlock Text="O critério da direita é mais importante — comparação recíproca" TextWrapping="Wrap" />
+                        </RadioButton>
+
+                        <TextBlock Text="Intensidade da preferência" Foreground="{StaticResource MutedBrush}"
+                                   FontWeight="SemiBold" Margin="0,12,0,8" />
+                        <ItemsControl ItemsSource="{Binding ScaleOptions}" IsEnabled="{Binding CanChooseIntensity}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding Label}"
+                                            Command="{Binding DataContext.SelectIntensityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding Intensity}"
+                                            Style="{StaticResource AhpIntensityButtonStyle}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding AnswerStatusText}" Foreground="{StaticResource AccentBrush}"
+                                   TextWrapping="Wrap" Margin="0,14,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,18">
+                    <StackPanel>
+                        <TextBlock Text="Escala fundamental de Saaty" FontSize="16" FontWeight="SemiBold" />
+                        <TextBlock Text="1 = igual; 3 = moderada; 5 = forte; 7 = muito forte; 9 = extrema. Os valores 2, 4, 6 e 8 são intermédios."
+                                   Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                        <TextBlock Text="Se escolher o critério da direita, a preferência corresponde ao recíproco: por exemplo, intensidade 3 representa 1/3 na ordem esquerda/direita."
+                                   Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <Grid Margin="0,0,0,18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="Anterior" Command="{Binding PreviousCommand}"
+                            IsEnabled="{Binding CanGoPrevious}" Style="{StaticResource SecondaryButtonStyle}" />
+                    <Button Grid.Column="1" Content="Seguinte" Command="{Binding NextCommand}"
+                            IsEnabled="{Binding CanGoNext}" Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0" />
+                    <Button Grid.Column="2" Content="Primeira por responder" Command="{Binding FirstIncompleteCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Right" Margin="10,0,10,0" />
+                    <Button Grid.Column="3" Content="Limpar resposta" Command="{Binding ClearAnswerCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}" />
+                </Grid>
+                <Button Content="Avançar para revisão" Command="{Binding AdvanceCommand}"
+                        IsEnabled="{Binding CanAdvance}" Style="{StaticResource ActionButtonStyle}"
+                        HorizontalAlignment="Right" Margin="0,0,0,18" />
+            </StackPanel>
+
+            <StackPanel Visibility="{Binding IsReviewStep, Converter={StaticResource BooleanToVisibility}}">
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,18">
+                    <StackPanel>
+                        <TextBlock Text="36 comparações concluídas" FontSize="20" FontWeight="SemiBold" />
+                        <TextBlock Text="As escolhas estão prontas para serem enviadas ao futuro motor AHP. Ainda não foram calculados pesos nem consistência."
+                                   Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,8,0,16" />
+                        <Button Content="Voltar às comparações" Command="{Binding EditCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,18">
+                    <StackPanel>
+                        <TextBlock Text="Respostas para integração" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12" />
+                        <DataGrid ItemsSource="{Binding ReviewRows}" AutoGenerateColumns="False" IsReadOnly="True"
+                                  CanUserAddRows="False" RowHeaderWidth="0" HeadersVisibility="Column" Height="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Esquerda" Binding="{Binding LeftName}" Width="*" />
+                                <DataGridTextColumn Header="Direita" Binding="{Binding RightName}" Width="*" />
+                                <DataGridTextColumn Header="Escolha" Binding="{Binding Choice}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="Estados previstos para resultados" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14" />
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="{Binding ResultStateText}" FontWeight="SemiBold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Result.State}" Value="{x:Static vm:AhpResultDisplayState.Inconsistent}">
+                                            <Setter Property="Foreground" Value="#FFCE7A" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Result.State}" Value="{x:Static vm:AhpResultDisplayState.Error}">
+                                            <Setter Property="Foreground" Value="#FF8F8F" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="Pesos calculados" FontSize="16" FontWeight="SemiBold" Margin="0,16,0,6" />
+                        <TextBlock Text="Os pesos serão apresentados aqui quando o motor AHP devolver resultados."
+                                   Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasWeights}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding Result.Weights}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,0,0,6">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding ValueText}" Foreground="{StaticResource AccentBrush}" />
+                                        <TextBlock Text="{Binding CriterionName}" TextWrapping="Wrap" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="Consistência da matriz" FontSize="16" FontWeight="SemiBold" Margin="0,18,0,6" />
+                        <TextBlock Text="{Binding Result.ConsistencyMessage}" Foreground="{StaticResource MutedBrush}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="Erros" FontSize="16" FontWeight="SemiBold" Margin="0,18,0,6" />
+                        <TextBlock Text="{Binding Result.ErrorMessage}" Foreground="{StaticResource MutedBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

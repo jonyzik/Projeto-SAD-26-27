@@ -7,10 +7,12 @@ O ParkWise será uma aplicação desktop Windows para apoiar a escolha de parque
 ## Estado atual do desenvolvimento
 
 - Solução WPF com MVVM, injeção de dependências, sidebar fixa e navegação dentro da mesma janela. O menu ativo fica destacado e as páginas são registadas por um contrato de rotas, preparado para receber os módulos da equipa.
-- Dashboard com quatro indicadores calculados por um serviço da camada Application, parques recentes, últimas simulações, ação rápida para abrir Simulações e gráfico simples por intervalos de preço.
-- Sem ligação configurada, a dashboard usa **dados fictícios**, identificados na interface. Com ligação configurada, lê a base de dados através de EF Core; se a leitura falhar, apresenta um erro em vez de números fictícios.
+- Dashboard com quatro indicadores calculados por um serviço da camada Application, lista de parques, últimas simulações, acessos rápidos à pesquisa e à configuração visual AHP, e gráfico simples por intervalos de preço.
+- Sem ligação configurada, a dashboard usa os mesmos **seis parques fictícios** da pesquisa, identificados na interface, e apresenta zero simulações. Com ligação configurada, lê a base de dados através de EF Core; se a leitura falhar, apresenta um erro em vez de números fictícios.
 - Entidades fundamentais e `DbContext` preparados para SQL Server Express. Não há migrações nem criação automática da base de dados.
-- Os menus Parques de Ciência, Simulações, Histórico e Definições apresentam ecrãs informativos. «Parques de Ciência» corresponde ao módulo Science Parks. O botão «Nova simulação» abre uma página própria de criação em desenvolvimento. Autenticação, importação XML/XSD, AHP, custos, exportação e módulos adicionais ainda não estão implementados.
+- «Parques de Ciência» inclui pesquisa por nome e localização, filtros por serviços e preço, detalhes com os nove critérios e seleção para comparação descritiva. Os seis parques do catálogo são **fictícios** e identificados na interface. Sem SQL Server, os indicadores da dashboard refletem este mesmo catálogo; a ligação ao serviço real de parques ainda não existe.
+- A ação «Configurar critérios AHP» da dashboard e o botão da comparação preliminar abrem a configuração visual dos nove critérios AHP. As 36 comparações são guardadas apenas em memória durante a sessão. O avanço para a revisão exige todas as respostas; cálculo de pesos, consistência, classificação e criação de simulações continuam por implementar.
+- Os ecrãs principais de Simulações, Histórico e Definições continuam informativos. Autenticação, importação XML/XSD, custos, exportação e módulos adicionais ainda não estão implementados.
 
 ### Regras dos indicadores
 
@@ -39,7 +41,9 @@ dotnet run --project src/ParkWise.App/ParkWise.App.csproj
 
 Também é possível abrir `ParkWise.sln` no Visual Studio e definir `ParkWise.App` como projeto de arranque. O SDK e os pacotes NuGet são necessários para restaurar, compilar e testar. A conexão SQL Server é opcional nesta fase. A configuração de `DbContext` apenas regista o fornecedor quando `PARKWISE_SQLSERVER_CONNECTION` está definida; não executa migrações. Uma connection string definida seleciona a fonte EF Core; a dashboard requer então uma base de dados acessível e o esquema correspondente.
 
-Em Linux, os testes das camadas Core e Application podem ser executados com `dotnet test tests/ParkWise.Tests/ParkWise.Tests.csproj` **se o SDK .NET 10 estiver instalado**. A aplicação WPF não pode ser executada em Linux; a compilação cruzada poderá depender da obtenção dos pacotes de targeting do Windows. Nesta sessão, o SDK `dotnet` não estava instalado, pelo que a compilação, os testes unitários e a interface WPF ficaram por validar em execução. Confirmar a aplicação num Windows antes de a considerar testada.
+Para validar a navegação no Windows, abrir a dashboard, escolher «Explorar parques», consultar os detalhes de um parque e voltar à pesquisa. Para validar a interface AHP, escolher «Configurar critérios AHP» na dashboard. Marcar «Igual importância» no primeiro par, avançar e voltar para verificar que a resposta e o progresso se mantêm. Escolher o critério da direita e uma intensidade entre 2 e 9 noutro par para verificar a comparação recíproca. O botão «Avançar para revisão» só fica ativo após as 36 respostas.
+
+Em Linux, os testes das camadas Core e Application podem ser executados com `dotnet test tests/ParkWise.Tests/ParkWise.Tests.csproj` **se o SDK .NET 10 estiver instalado**. A aplicação WPF só pode ser executada em Windows; a compilação cruzada poderá depender da obtenção dos pacotes de targeting do Windows.
 
 ## Organização
 
@@ -47,9 +51,9 @@ Em Linux, os testes das camadas Core e Application podem ser executados com `dot
 | --- | --- |
 | `src/ParkWise.App` | WPF, Views, ViewModels, contrato de rotas e composição de dependências |
 | `src/ParkWise.Core` | Entidades, enumerações e catálogo dos critérios obrigatórios |
-| `src/ParkWise.Application` | Contratos e serviço de cálculo dos indicadores da dashboard |
+| `src/ParkWise.Application` | Contratos e serviço de cálculo da dashboard; pesquisa e seleção de parques |
 | `src/ParkWise.Infrastructure` | EF Core, SQL Server e fontes de dados reais ou de demonstração para a dashboard |
-| `tests/ParkWise.Tests` | Testes unitários dos critérios e dos cálculos da dashboard |
+| `tests/ParkWise.Tests` | Testes unitários dos critérios, dashboard, pesquisa, filtros e seleção |
 | `docs` | Notas de arquitetura e planeamento |
 | `database` | Futuras migrações e documentação da base de dados |
 
