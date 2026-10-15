@@ -16,15 +16,25 @@
                     <TextBlock Text="ParkWise" FontSize="25" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" />
                     <TextBlock Text="APOIO À DECISÃO" FontSize="10" Foreground="{StaticResource MutedBrush}" Margin="2,4,0,0" />
                 </StackPanel>
-                <TextBlock DockPanel.Dock="Bottom" Text="Versão inicial · 2026/2027"
+                <TextBlock DockPanel.Dock="Bottom" Text="ISPGAYA · 2026/2027"
                            Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="10,12" />
-                <StackPanel>
-                    <Button Content="Dashboard" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" Style="{StaticResource NavButtonStyle}" />
-                    <Button Content="Parques Tecnológicos" Command="{Binding NavigateCommand}" CommandParameter="Parques" Style="{StaticResource NavButtonStyle}" />
-                    <Button Content="Simulações" Command="{Binding NavigateCommand}" CommandParameter="Simulações" Style="{StaticResource NavButtonStyle}" />
-                    <Button Content="Histórico" Command="{Binding NavigateCommand}" CommandParameter="Histórico" Style="{StaticResource NavButtonStyle}" />
-                    <Button Content="Definições" Command="{Binding NavigateCommand}" CommandParameter="Definições" Style="{StaticResource NavButtonStyle}" />
-                </StackPanel>
+                <ItemsControl ItemsSource="{Binding NavigationItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource NavButtonStyle}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="17"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                               Width="28" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Label}" FontSize="14"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </DockPanel>
         </Border>
 

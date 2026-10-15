@@ -41,6 +41,37 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                <Setter Property="Background" Value="#1A3A48" />
+                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="ActionButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Foreground" Value="#0B2230" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="7">
+                        <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#7BE3D2" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <Style x:Key="CardStyle" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource CardBrush}" />
