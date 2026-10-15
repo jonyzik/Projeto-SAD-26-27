@@ -46,7 +46,7 @@ Fluxo de dependências: App → Application e Infrastructure; Infrastructure →
 
 ## Git e GitHub — Guia de colaboração
 
-O repositório da equipa é [jonyzik/Projeto-SAD-26-27](https://github.com/jonyzik/Projeto-SAD-26-27). Os comandos seguintes usam `dev/jony` como exemplo de branch pessoal. Cada elemento deve substituir `jony` pelo seu nome. Executar os comandos dentro da pasta do repositório, exceto o primeiro `git clone`.
+O repositório da equipa é [jonyzik/Projeto-SAD-26-27](https://github.com/jonyzik/Projeto-SAD-26-27). Os comandos seguintes usam `dev/joao` como exemplo de branch pessoal. Cada elemento deve substituir `joao` pelo seu nome. Executar os comandos dentro da pasta do repositório, exceto o primeiro `git clone`.
 
 ### Obter o repositório e preparar a branch pessoal
 
@@ -74,14 +74,14 @@ git pull --ff-only origin main
 Criar uma branch pessoal a partir da `main` atualizada e publicá-la no GitHub. A criação é feita apenas uma vez por branch:
 
 ```powershell
-git switch -c dev/jony
-git push -u origin dev/jony
+git switch -c dev/joao
+git push -u origin dev/joao
 ```
 
 O parâmetro `-u` associa a branch local à branch remota; depois disso, basta usar `git push`. Para mudar entre branches já existentes:
 
 ```powershell
-git switch dev/jony
+git switch dev/joao
 git switch main
 ```
 
@@ -106,7 +106,7 @@ Para incluir vários ficheiros, indicá-los no `git add` ou usar `git add -A` de
 Guardar primeiro o trabalho em curso. Na branch pessoal, obter a versão mais recente da `main` remota e integrá-la:
 
 ```powershell
-git switch dev/jony
+git switch dev/joao
 git fetch origin
 git merge origin/main
 git push
@@ -127,7 +127,7 @@ O `git commit` conclui o merge interrompido pelos conflitos. Se for necessário 
 
 1. Confirmar que o trabalho está na branch pessoal e atualizado com a `main`. Executar `dotnet build ParkWise.sln --configuration Debug` e `dotnet test ParkWise.sln --configuration Debug` num ambiente Windows com o SDK instalado.
 2. Enviar os commits com `git push`.
-3. No [GitHub do projeto](https://github.com/jonyzik/Projeto-SAD-26-27/pulls), escolher **New pull request**, definir `main` como **base** e `dev/jony` como **compare**.
+3. No [GitHub do projeto](https://github.com/jonyzik/Projeto-SAD-26-27/pulls), escolher **New pull request**, definir `main` como **base** e `dev/joao` como **compare**.
 4. Descrever o que mudou, indicar como foi verificado e pedir revisão à equipa. Integrar apenas depois da revisão e das verificações necessárias.
 
 Após a integração do Pull Request, atualizar a `main` local:
