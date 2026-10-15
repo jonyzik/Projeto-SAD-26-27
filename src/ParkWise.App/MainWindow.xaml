@@ -1,0 +1,44 @@
+<Window x:Class="ParkWise.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ParkWise — Apoio à decisão" Width="1180" Height="760"
+        MinWidth="820" MinHeight="550" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="224" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource SidebarBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="18,28,18,20">
+                <StackPanel DockPanel.Dock="Top" Margin="10,0,0,36">
+                    <TextBlock Text="ParkWise" FontSize="25" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" />
+                    <TextBlock Text="APOIO À DECISÃO" FontSize="10" Foreground="{StaticResource MutedBrush}" Margin="2,4,0,0" />
+                </StackPanel>
+                <TextBlock DockPanel.Dock="Bottom" Text="Versão inicial · 2026/2027"
+                           Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="10,12" />
+                <StackPanel>
+                    <Button Content="Dashboard" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" Style="{StaticResource NavButtonStyle}" />
+                    <Button Content="Parques Tecnológicos" Command="{Binding NavigateCommand}" CommandParameter="Parques" Style="{StaticResource NavButtonStyle}" />
+                    <Button Content="Simulações" Command="{Binding NavigateCommand}" CommandParameter="Simulações" Style="{StaticResource NavButtonStyle}" />
+                    <Button Content="Histórico" Command="{Binding NavigateCommand}" CommandParameter="Histórico" Style="{StaticResource NavButtonStyle}" />
+                    <Button Content="Definições" Command="{Binding NavigateCommand}" CommandParameter="Definições" Style="{StaticResource NavButtonStyle}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="32,26,32,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel Margin="0,0,0,26">
+                <TextBlock Text="ParkWise · Projeto académico" DockPanel.Dock="Right"
+                           Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" FontSize="12" />
+                <TextBlock Text="{Binding CurrentTitle}" FontSize="27" FontWeight="SemiBold" />
+            </DockPanel>
+            <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+        </Grid>
+    </Grid>
+</Window>
