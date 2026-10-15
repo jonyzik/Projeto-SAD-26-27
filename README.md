@@ -6,11 +6,11 @@ O ParkWise será uma aplicação desktop Windows para apoiar a escolha de parque
 
 ## Estado atual do desenvolvimento
 
-- Solução WPF com MVVM, injeção de dependências, sidebar fixa e navegação dentro da mesma janela. O menu ativo fica destacado.
+- Solução WPF com MVVM, injeção de dependências, sidebar fixa e navegação dentro da mesma janela. O menu ativo fica destacado e as páginas são registadas por um contrato de rotas, preparado para receber os módulos da equipa.
 - Dashboard com quatro indicadores calculados por um serviço da camada Application, parques recentes, últimas simulações, ação rápida para abrir Simulações e gráfico simples por intervalos de preço.
 - Sem ligação configurada, a dashboard usa **dados fictícios**, identificados na interface. Com ligação configurada, lê a base de dados através de EF Core; se a leitura falhar, apresenta um erro em vez de números fictícios.
 - Entidades fundamentais e `DbContext` preparados para SQL Server Express. Não há migrações nem criação automática da base de dados.
-- Os menus Parques Tecnológicos, Simulações, Histórico e Definições apresentam ecrãs informativos. O botão «Nova simulação» abre uma página própria de criação em desenvolvimento. Autenticação, importação XML/XSD, AHP, custos, exportação e módulos adicionais ainda não estão implementados.
+- Os menus Parques de Ciência, Simulações, Histórico e Definições apresentam ecrãs informativos. «Parques de Ciência» corresponde ao módulo Science Parks. O botão «Nova simulação» abre uma página própria de criação em desenvolvimento. Autenticação, importação XML/XSD, AHP, custos, exportação e módulos adicionais ainda não estão implementados.
 
 ### Regras dos indicadores
 
@@ -45,7 +45,7 @@ Em Linux, os testes das camadas Core e Application podem ser executados com `dot
 
 | Pasta | Responsabilidade |
 | --- | --- |
-| `src/ParkWise.App` | WPF, Views, ViewModels, navegação, composição de dependências |
+| `src/ParkWise.App` | WPF, Views, ViewModels, contrato de rotas e composição de dependências |
 | `src/ParkWise.Core` | Entidades, enumerações e catálogo dos critérios obrigatórios |
 | `src/ParkWise.Application` | Contratos e serviço de cálculo dos indicadores da dashboard |
 | `src/ParkWise.Infrastructure` | EF Core, SQL Server e fontes de dados reais ou de demonstração para a dashboard |
