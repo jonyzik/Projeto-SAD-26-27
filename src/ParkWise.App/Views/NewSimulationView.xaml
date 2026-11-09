@@ -1,0 +1,418 @@
+<UserControl x:Class="ParkWise.App.Views.NewSimulationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style TargetType="TextBox" BasedOn="{StaticResource FormTextBoxStyle}" />
+        <Style TargetType="CheckBox" BasedOn="{StaticResource FormCheckBoxStyle}" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,12,24">
+
+            <!-- Estado e erros -->
+            <Border Background="#173C48" CornerRadius="10" Padding="16" Margin="0,0,0,16">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="Ver simulações guardadas" Command="{Binding BackToListCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}" Margin="14,0,0,0" />
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource AccentBrush}"
+                               TextWrapping="Wrap" VerticalAlignment="Center" />
+                </DockPanel>
+            </Border>
+
+            <Border Background="#3A2328" BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
+                    CornerRadius="10" Padding="16" Margin="0,0,0,16"
+                    Visibility="{Binding HasErrors, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Text="Verifique os seguintes dados:" FontWeight="SemiBold" Margin="0,0,0,8" />
+                    <ItemsControl ItemsSource="{Binding Errors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding StringFormat='• {0}'}" Foreground="{StaticResource DangerBrush}"
+                                           TextWrapping="Wrap" Margin="0,2" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- 1. Identificação -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="1. Identificação" Style="{StaticResource SectionTitleStyle}" Margin="0,0,0,14" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Nome da simulação *" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" MaxLength="200" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Style="{StaticResource FieldPanelStyle}" Margin="0,0,0,14">
+                            <TextBlock Text="Descrição (opcional)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" MaxLength="1000" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 2. Necessidades da empresa -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="2. Necessidades da empresa" Style="{StaticResource SectionTitleStyle}" />
+                    <TextBlock Text="Os parques que ultrapassem o orçamento ou fiquem fora da localização pretendida são excluídos do ranking."
+                               Style="{StaticResource HintTextStyle}" Margin="0,0,0,14" />
+                    <UniformGrid Columns="3">
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Área necessária (m²) *" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding AreaText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Número de colaboradores *" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding EmployeesText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Duração do contrato (meses) *" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding MonthsText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Orçamento mensal máximo (€, opcional)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding BudgetText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Localização pretendida (opcional)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding PreferredCity, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- 3. Parâmetros dos custos operacionais -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,4">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+                            <Button Content="Repor predefinição" Command="{Binding LoadDefaultsCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" />
+                            <Button Content="Guardar como predefinição" Command="{Binding SaveDefaultsCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" Margin="8,0,0,0" />
+                            <Button Content="Valores de origem" Command="{Binding FactoryDefaultsCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" Margin="8,0,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="3. Parâmetros dos custos operacionais" Style="{StaticResource SectionTitleStyle}" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource HintTextStyle}" Margin="0,0,0,14"
+                               Text="Custo mensal = renda (área × preço/m² do parque) + condomínio + energia e água + serviços por colaborador + estacionamento + contingência. A instalação é um custo único somado ao total do contrato." />
+                    <UniformGrid Columns="3">
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Condomínio e serviços comuns (€/m²/mês)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding ServiceChargeText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Energia e água (€/m²/mês)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding UtilitiesText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Serviços por colaborador (€/mês)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding ServicesPerEmployeeText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Colaboradores com estacionamento (%)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding ParkingPercentText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Custo por lugar de estacionamento (€/mês)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding ParkingCostText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Instalação (€/m², valor único)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding SetupCostText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldPanelStyle}">
+                            <TextBlock Text="Margem de contingência (%)" Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox Text="{Binding ContingencyText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- 4. Parques a comparar -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,4">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+                            <Button Content="Selecionar todos" Command="{Binding SelectAllParksCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" />
+                            <Button Content="Limpar seleção" Command="{Binding ClearParksCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" Margin="8,0,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="4. Parques a comparar" Style="{StaticResource SectionTitleStyle}" />
+                    </DockPanel>
+                    <TextBlock Text="{Binding SelectionSummary}" Style="{StaticResource HintTextStyle}" Margin="0,0,0,12" />
+                    <Grid Margin="30,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1.5*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="1.2*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Parque" Style="{StaticResource FieldLabelStyle}" />
+                        <TextBlock Grid.Column="1" Text="Localização" Style="{StaticResource FieldLabelStyle}" />
+                        <TextBlock Grid.Column="2" Text="Preço" Style="{StaticResource FieldLabelStyle}" />
+                        <TextBlock Grid.Column="3" Text="Avaliação" Style="{StaticResource FieldLabelStyle}" />
+                        <TextBlock Grid.Column="4" Text="Custo mensal estimado" Style="{StaticResource FieldLabelStyle}" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding Parks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,8">
+                                    <DockPanel>
+                                        <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsSelected}" Width="30"
+                                                  AutomationProperties.Name="{Binding Name}" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="2*" />
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="1.2*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,8,0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding City}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,0,8,0" />
+                                            <TextBlock Grid.Column="2" Text="{Binding RentText}" Foreground="{StaticResource MutedBrush}" />
+                                            <TextBlock Grid.Column="3" Text="{Binding EvaluationText}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                                            <TextBlock Grid.Column="4" Text="{Binding EstimatedMonthlyCost}" Foreground="{StaticResource AccentBrush}" />
+                                        </Grid>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- 5. Comparação dos critérios (AHP) -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,4">
+                        <Button DockPanel.Dock="Right" Content="Repor «igual importância»" Command="{Binding ResetComparisonsCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" VerticalAlignment="Top" />
+                        <TextBlock Text="5. Importância dos critérios (método AHP)" Style="{StaticResource SectionTitleStyle}" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource HintTextStyle}" Margin="0,0,0,16"
+                               Text="Para cada par, desloque o seletor para o critério mais importante para a empresa. A posição central significa igual importância; os extremos correspondem a 9 na escala de Saaty (extremamente mais importante). Os pesos e a consistência são recalculados de imediato." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+
+                        <ItemsControl ItemsSource="{Binding Comparisons}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <StackPanel>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="2*" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding LeftName}" TextAlignment="Right" TextWrapping="Wrap"
+                                                           VerticalAlignment="Center" FontSize="12" Margin="0,0,10,0" />
+                                                <Slider Grid.Column="1" Minimum="-8" Maximum="8" TickFrequency="1"
+                                                        IsSnapToTickEnabled="True" TickPlacement="BottomRight"
+                                                        SmallChange="1" LargeChange="2" VerticalAlignment="Center"
+                                                        Value="{Binding Position, Mode=TwoWay}"
+                                                        AutomationProperties.Name="{Binding Description}" />
+                                                <TextBlock Grid.Column="2" Text="{Binding RightName}" TextWrapping="Wrap"
+                                                           VerticalAlignment="Center" FontSize="12" Margin="10,0,0,0" />
+                                            </Grid>
+                                            <TextBlock Text="{Binding Description}" HorizontalAlignment="Center" FontSize="11" Margin="0,4,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsNeutral}" Value="True">
+                                                                <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Pesos calculados -->
+                        <Border Grid.Column="2" Background="#102033" CornerRadius="10" Padding="16" VerticalAlignment="Top">
+                            <StackPanel>
+                                <TextBlock Text="Pesos dos critérios" FontSize="15" FontWeight="SemiBold" />
+                                <TextBlock Text="Marque «Obrigatório» para excluir parques sem esse serviço (pontuação 0)."
+                                           Style="{StaticResource HintTextStyle}" Margin="0,4,0,12" />
+                                <ItemsControl ItemsSource="{Binding Criteria}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,0,10">
+                                                <DockPanel>
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding WeightText}" FontWeight="SemiBold" Margin="8,0,0,0" />
+                                                    <TextBlock Text="{Binding Name}" FontSize="12" TextWrapping="Wrap" />
+                                                </DockPanel>
+                                                <DockPanel Margin="0,4,0,0">
+                                                    <CheckBox DockPanel.Dock="Right" Content="Obrigatório" FontSize="11" Margin="10,0,0,0"
+                                                              IsChecked="{Binding IsMandatory}" IsEnabled="{Binding CanBeMandatory}" />
+                                                    <ProgressBar Style="{StaticResource BarStyle}" Value="{Binding BarValue, Mode=OneWay}" />
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="{Binding ConsistencyText}" TextWrapping="Wrap" FontSize="12" Margin="0,8,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConsistent}" Value="False">
+                                                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Ações -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <Button Content="Guardar simulação" Command="{Binding SaveCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                        <Button Content="Executar simulação" Command="{Binding RunCommand}"
+                                Style="{StaticResource ActionButtonStyle}" Margin="10,0,0,0" />
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Pronto para calcular?" FontSize="16" FontWeight="SemiBold" />
+                        <TextBlock Text="O preço é avaliado pelo custo operacional mensal: quanto menor o custo, maior a prioridade do parque nesse critério."
+                                   Style="{StaticResource HintTextStyle}" Margin="0,4,16,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- 6. Resultados -->
+            <Border Style="{StaticResource CardStyle}"
+                    Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Text="6. Resultados" Style="{StaticResource SectionTitleStyle}" />
+                    <TextBlock Text="{Binding ResultsNotice}" Style="{StaticResource HintTextStyle}" Margin="0,0,0,10" />
+
+                    <Border Background="#173C48" CornerRadius="8" Padding="14" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="Parque recomendado" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                            <TextBlock Text="{Binding BestParkText}" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,4,0,4" />
+                            <TextBlock Text="{Binding OutcomeConsistencyText}" Style="{StaticResource HintTextStyle}" />
+                        </StackPanel>
+                    </Border>
+
+                    <DataGrid ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
+                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                              SelectionMode="Single" HeadersVisibility="Column" RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#" Binding="{Binding RankText}" Width="45" />
+                            <DataGridTextColumn Header="Parque" Binding="{Binding ParkName}" Width="2*" />
+                            <DataGridTextColumn Header="Localização" Binding="{Binding City}" Width="1.5*" />
+                            <DataGridTextColumn Header="Prioridade AHP" Binding="{Binding ScoreText}" Width="*" />
+                            <DataGridTextColumn Header="Custo mensal" Binding="{Binding MonthlyCostText}" Width="*" />
+                            <DataGridTextColumn Header="Total do contrato" Binding="{Binding ContractCostText}" Width="1.2*" />
+                            <DataGridTextColumn Header="Situação" Binding="{Binding StatusText}" Width="2*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Detalhe do parque selecionado -->
+                    <Border Background="#102033" CornerRadius="10" Padding="16" Margin="0,14,0,0"
+                            DataContext="{Binding SelectedResult}"
+                            Visibility="{Binding DataContext.HasSelectedResult, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding ParkName, StringFormat='Detalhe: {0}'}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel>
+                                    <TextBlock Text="Custos operacionais" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding CostLines}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <DockPanel Margin="0,0,0,5">
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Value}" Margin="8,0,0,0" />
+                                                    <TextBlock Text="{Binding Label}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" />
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Pontos fortes" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" />
+                                    <TextBlock Text="{Binding StrengthsText}" TextWrapping="Wrap" Margin="0,4,0,14" />
+                                    <TextBlock Text="Pontos fracos" FontWeight="SemiBold" Foreground="{StaticResource WarningBrush}" />
+                                    <TextBlock Text="{Binding WeaknessesText}" TextWrapping="Wrap" Margin="0,4,0,14" />
+                                    <TextBlock Text="Situação" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="Contribuição de cada critério" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding Contributions}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Margin="0,0,0,7">
+                                                    <DockPanel>
+                                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Value}" FontSize="11" Margin="8,0,0,0" />
+                                                        <TextBlock Text="{Binding Name}" FontSize="11" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                                                    </DockPanel>
+                                                    <ProgressBar Style="{StaticResource BarStyle}" Height="6" Margin="0,3,0,0" Value="{Binding Bar, Mode=OneWay}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBlock Text="Disponível depois de executar a simulação.">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource HintTextStyle}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasContributions}" Value="False">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

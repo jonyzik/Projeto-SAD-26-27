@@ -8,4 +8,7 @@ public sealed class SimulationCriterionWeight
     public int EvaluationCriterionId { get; set; }
     public EvaluationCriterion EvaluationCriterion { get; set; } = null!;
     public decimal Weight { get; set; }
+
+    /// <summary>Indica se o parque tem obrigatoriamente de oferecer este critério.</summary>
+    public bool IsMandatory { get; set; }
 }
