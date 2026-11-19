@@ -2,6 +2,7 @@ namespace ParkWise.App.Navigation;
 
 public static class PageKeys
 {
+    public const string Login = "Login";
     public const string Dashboard = "Dashboard";
     public const string ScienceParks = "ScienceParks";
     public const string ScienceParkDetails = "ScienceParkDetails";

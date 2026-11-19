@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download | ParkWise</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F5F7FC;
+            color: #171F43;
+        }
+
+        .download-container {
+            width: 100%;
+            max-width: 520px;
+            padding: 40px 25px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 38px;
+            font-weight: bold;
+            color: #171F43;
+            margin-bottom: 10px;
+        }
+
+        .logo span {
+            color: #6657E8;
+        }
+
+        .subtitle {
+            color: #777F95;
+            font-size: 13px;
+            letter-spacing: 3px;
+            margin-bottom: 55px;
+        }
+
+        h1 {
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: #777F95;
+            font-size: 14px;
+            margin-bottom: 35px;
+        }
+
+        .download-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+            border: 1px solid #E5E9F2;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #171F43;
+            transition: 0.2s ease;
+        }
+
+        .download-button:hover:not(.disabled) {
+            border-color: #6657E8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 31, 67, 0.07);
+        }
+
+        .platform {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .platform-icon {
+            font-size: 27px;
+            width: 35px;
+            text-align: center;
+        }
+
+        .platform-name {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .platform-description {
+            font-size: 12px;
+            color: #8A91A4;
+            margin-top: 5px;
+        }
+
+        .download-icon {
+            font-size: 21px;
+            color: #6657E8;
+        }
+
+        .disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .coming-soon {
+            font-size: 11px;
+            color: #777F95;
+        }
+
+        footer {
+            margin-top: 45px;
+            font-size: 12px;
+            color: #9299AA;
+        }
+
+        @media (max-width: 480px) {
+            .download-container {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="download-container">
+
+        <div class="logo">Park<span>Wise</span></div>
+        <div class="subtitle">DOWNLOAD</div>
+
+        <h1>Escolhe o teu sistema operativo</h1>
+
+        <p class="description">
+            Descarrega o ParkWise para o teu dispositivo.
+        </p>
+
+        <!-- macOS -->
+        <div class="download-button disabled">
+            <div class="platform">
+                <div class="platform-icon">●</div>
+                <div>
+                    <div class="platform-name">macOS</div>
+                    <div class="platform-description">
+                        Descarregar para Mac
+                    </div>
+                </div>
+            </div>
+            <span class="coming-soon">Em breve</span>
+        </div>
+
+        <!-- Windows -->
+        <a href="downloads/ParkWise-Setup.exe"
+           class="download-button">
+            <div class="platform">
+                <div class="platform-icon">⊞</div>
+                <div>
+                    <div class="platform-name">Windows</div>
+                    <div class="platform-description">
+                        Descarregar para Windows
+                    </div>
+                </div>
+            </div>
+            <span class="download-icon">↓</span>
+        </a>
+
+        <!-- Linux -->
+        <div class="download-button disabled">
+            <div class="platform">
+                <div class="platform-icon">🐧</div>
+                <div>
+                    <div class="platform-name">Linux</div>
+                    <div class="platform-description">
+                        Descarregar para Linux
+                    </div>
+                </div>
+            </div>
+            <span class="coming-soon">Em breve</span>
+        </div>
+
+        <footer>
+            ParkWise · Apoio à decisão
+        </footer>
+
+    </main>
+
+</body>
+</html>

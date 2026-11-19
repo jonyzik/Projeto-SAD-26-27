@@ -222,3 +222,9 @@ Para outra pessoa, usar a branch atribuída na tabela. Repetir este ciclo regula
 ## Próximos passos
 
 Implementar autenticação segura, gestão e importação de parques com XML/XSD, pesquisa, casos de utilização da simulação AHP, cálculo de custos e exportação. Rever o modelo de dados e criar migrações versionadas antes da primeira base de dados partilhada. Nenhuma migração deve ser aplicada sem confirmar o ambiente de destino.
+
+
+## Login de teste
+
+Email: teste@parkwise.pt
+password: ParkWise123!
