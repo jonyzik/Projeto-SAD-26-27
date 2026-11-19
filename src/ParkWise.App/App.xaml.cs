@@ -19,6 +19,7 @@ public partial class App : System.Windows.Application
         base.OnStartup(e);
 
         var registrations = new ServiceCollection();
+        registrations.AddSingleton<LoginViewModel>();
         registrations.AddSingleton<IDashboardService, DashboardService>();
         registrations.AddSingleton<DashboardViewModel>();
         registrations.AddSingleton<IScienceParkCatalog, DemoScienceParkCatalog>();

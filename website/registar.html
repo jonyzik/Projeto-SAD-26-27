@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Acesso à plataforma ParkWise.">
-    <title>Login | ParkWise</title>
+    <title>Criar Conta | ParkWise</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="login-page">
+<body class="register-page">
 
     <header class="header">
         <nav class="navbar container">
@@ -26,22 +26,33 @@
         </nav>
     </header>
 
-    <main class="login-main">
+    <main class="register-main">
 
-        <section class="login-card">
+        <section class="register-card">
 
-            <span class="section-tag">ÁREA RESERVADA</span>
+            <span class="section-tag">CRIAR CONTA</span>
 
             <h1>Bem-vindo ao ParkWise.</h1>
 
-            <p class="login-description">
-                Inicia sessão para entrares na tua área de trabalho
-                e começares a analisar parques de ciência e tecnologia.
+            <p class="register-description">
+                Crie uma conta para poder aceder à sua área reservada.                
             </p>
 
-            <form id="login-form">
+            <form id="register-form">
 
-                <div class="login-field">
+                <div class="register-field">
+                    <label for="nome">Nome Completo</label>
+
+                    <input
+                        id="nome"
+                        name="nome"
+                        type="text"
+                        placeholder="Introduza o seu nome completo"
+                        autocomplete="name"
+                        required>
+                </div>
+
+                <div class="register-field">
                     <label for="email">Email</label>
 
                     <input
@@ -49,24 +60,36 @@
                         name="email"
                         type="email"
                         placeholder="nome@exemplo.pt"
-                        autocomplete="username"
+                        autocomplete="email"
                         required>
                 </div>
 
-                <div class="login-field">
+                <div class="register-field">
                     <label for="password">Palavra-passe</label>
 
                     <input
                         id="password"
                         name="password"
                         type="password"
-                        placeholder="Introduz a tua palavra-passe"
-                        autocomplete="current-password"
+                        placeholder="Introduza a sua palavra-passe"
+                        autocomplete="password"
                         required>
                 </div>
 
+                <div class="register-field">
+                    <label for="confirm-password">Confirmar Palavra-passe</label>
+
+                    <input
+                        id="confirm-password"
+                        name="confirm-password"
+                        type="password"
+                        placeholder="Confirme a sua palavra-passe"
+                        autocomplete="password"
+                        required>
+                </div>
+                
                 <button type="submit" class="btn btn-primary login-submit">
-                    Entrar
+                    Criar Conta
                 </button>
 
                 <p id="login-message" class="login-message"
@@ -103,6 +126,9 @@
     </footer>
 
     <script src="js/script.js"></script>
-
+    <script src="js/register.js"></script>
 </body>
+    
+
+
 </html>

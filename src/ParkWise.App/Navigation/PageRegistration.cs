@@ -90,6 +90,15 @@ public static class PageRegistration
             IsVisibleInSidebar: false,
             ParentMenuKey: PageKeys.Simulations));
 
+        services.AddSingleton<IPageRoute>(provider => new PageRoute(
+            PageKeys.Login,
+            "Login",
+            "Iniciar sessão",
+            "Aceda à sua conta ParkWise",
+            "\uE77B",
+            () => provider.GetRequiredService<LoginViewModel>(),
+            IsVisibleInSidebar: false));
+
         return services;
     }
 }
