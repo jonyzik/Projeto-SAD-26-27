@@ -44,19 +44,19 @@ if (currentYear) {
 }
 
 
-// Formulário de login (apenas interface visual)
+// Formulário de registo (apenas interface visual)
 
-const loginForm = document.getElementById('login-form');
-const loginMessage = document.getElementById('login-message');
+const registerForm = document.getElementById('register-form');
+const registerMessage = document.getElementById('register-message');
 
-if (loginForm && loginMessage) {
+if (registerForm && registerMessage) {
 
-    loginForm.addEventListener('submit', (event) => {
+    registerForm.addEventListener('submit', (event) => {
 
         event.preventDefault();
 
-        loginMessage.textContent =
-            'A autenticação ainda não está ligada ao servidor .NET.';
+        registerMessage.textContent =
+            'O registo ainda não está ligado ao servidor .NET.';
 
     });
 

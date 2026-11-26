@@ -3,6 +3,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ParkWise.Core\ParkWise.Core.csproj" />
     <ProjectReference Include="..\ParkWise.Application\ParkWise.Application.csproj" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.15" />
   </ItemGroup>
 </Project>

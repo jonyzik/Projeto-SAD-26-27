@@ -1,65 +1,162 @@
+
 <Window x:Class="ParkWise.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ParkWise — Apoio à decisão" Width="1180" Height="760"
-        MinWidth="820" MinHeight="550" WindowStartupLocation="CenterScreen">
+        Title="ParkWise — Apoio à decisão"
+        Width="1180"
+        Height="760"
+        MinWidth="820"
+        MinHeight="550"
+        WindowStartupLocation="CenterScreen">
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="224" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="{StaticResource SidebarBrush}"
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
-            <DockPanel Margin="18,28,18,20">
-                <StackPanel DockPanel.Dock="Top" Margin="10,0,0,36">
-                    <TextBlock Text="ParkWise" FontSize="25" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" />
-                    <TextBlock Text="SELEÇÃO DE PARQUES" FontSize="10" Foreground="{StaticResource MutedBrush}" Margin="2,4,0,0" />
-                </StackPanel>
-                <TextBlock DockPanel.Dock="Bottom" Text="ISPGAYA · 2026/2027"
-                           Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="10,12" />
-                <ItemsControl ItemsSource="{Binding NavigationItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                    AutomationProperties.Name="{Binding Label}"
-                                    CommandParameter="{Binding}" Style="{StaticResource NavButtonStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="17"
-                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                               Width="28" VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding Label}" FontSize="14"
-                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                               VerticalAlignment="Center" />
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </DockPanel>
-        </Border>
+        <!-- Ecrã de Login -->
+        <Grid>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoginPage}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
 
-        <Grid Grid.Column="1" Margin="32,26,32,24">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid Margin="0,0,0,26">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="{Binding CurrentTitle}" FontSize="27" FontWeight="SemiBold" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding CurrentSubtitle}" FontSize="13"
-                               Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0" TextWrapping="Wrap" />
-                </StackPanel>
-                <Border Grid.Column="1" Background="{StaticResource CardBrush}"
-                        CornerRadius="7" Padding="12,8" VerticalAlignment="Center" Margin="16,0,0,0">
-                    <TextBlock Text="9 critérios de avaliação" Foreground="{StaticResource AccentBrush}" FontSize="12" />
-                </Border>
-            </Grid>
-            <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+            <ContentControl Content="{Binding CurrentPage}"/>
         </Grid>
+
+        <!-- Interface principal -->
+        <Grid>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoginPage}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="224"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Barra lateral -->
+                <Border Grid.Column="0"
+                        Background="{StaticResource SidebarBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="0,0,1,0">
+
+                    <DockPanel Margin="18,28,18,20">
+
+                        <StackPanel DockPanel.Dock="Top"
+                                    Margin="10,0,0,36">
+
+                            <TextBlock Text="ParkWise"
+                                       FontSize="25"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource AccentBrush}"/>
+
+                            <TextBlock Text="SELEÇÃO DE PARQUES"
+                                       FontSize="10"
+                                       Foreground="{StaticResource MutedBrush}"
+                                       Margin="2,4,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock DockPanel.Dock="Bottom"
+                                   Text="ISPGAYA · 2026/2027"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   FontSize="11"
+                                   Margin="10,12"/>
+
+                        <ItemsControl ItemsSource="{Binding NavigationItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding DataContext.NavigateCommand,
+                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                        AutomationProperties.Name="{Binding Label}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource NavButtonStyle}">
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Icon}"
+                                                       FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="17"
+                                                       Foreground="{Binding Foreground,
+                                                       RelativeSource={RelativeSource AncestorType=Button}}"
+                                                       Width="28"
+                                                       VerticalAlignment="Center"/>
+
+                                            <TextBlock Text="{Binding Label}"
+                                                       FontSize="14"
+                                                       Foreground="{Binding Foreground,
+                                                       RelativeSource={RelativeSource AncestorType=Button}}"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </DockPanel>
+                </Border>
+
+                <!-- Conteúdo principal -->
+                <Grid Grid.Column="1" Margin="32,26,32,24">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Cabeçalho -->
+                    <Grid Margin="0,0,0,26">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+
+                            <TextBlock Text="{Binding CurrentTitle}"
+                                       FontSize="27"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"/>
+
+                            <TextBlock Text="{Binding CurrentSubtitle}"
+                                       FontSize="13"
+                                       Foreground="{StaticResource MutedBrush}"
+                                       Margin="0,5,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <Border Grid.Column="1"
+                                Background="{StaticResource CardBrush}"
+                                CornerRadius="7"
+                                Padding="12,8"
+                                VerticalAlignment="Center"
+                                Margin="16,0,0,0">
+
+                            <TextBlock Text="9 critérios de avaliação"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       FontSize="12"/>
+                        </Border>
+
+                    </Grid>
+
+                    <ContentControl Grid.Row="1"
+                                    Content="{Binding CurrentPage}"/>
+
+                </Grid>
+            </Grid>
+        </Grid>
+
     </Grid>
 </Window>

@@ -9,8 +9,23 @@
                 <ResourceDictionary Source="Styles/Theme.xaml" />
                 <ResourceDictionary Source="Styles/SimulationStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+                <views:LoginView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
                 <views:DashboardView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ScienceParkSearchViewModel}">
+                <views:ScienceParkSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ScienceParkDetailsViewModel}">
+                <views:ScienceParkDetailsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ScienceParkComparisonViewModel}">
+                <views:ScienceParkComparisonView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AhpCriteriaConfigurationViewModel}">
+                <views:AhpCriteriaConfigurationView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:PlaceholderViewModel}">
                 <views:PlaceholderView />

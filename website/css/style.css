@@ -645,7 +645,7 @@ button, input {
    PÁGINA DE LOGIN
    ========================================= */
 
-.login-page {
+.register-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -655,29 +655,29 @@ button, input {
         var(--paper);
 }
 
-.login-page .header {
+.register-page .header {
     width: 100%;
 }
 
-.login-back {
+.register-back {
     color: var(--muted);
     font-size: 13px;
     font-weight: 700;
     transition: color .2s;
 }
 
-.login-back:hover {
+.register-back:hover {
     color: var(--primary);
 }
 
-.login-main {
+.register-main {
     flex: 1;
     display: grid;
     place-items: center;
     padding: 65px 20px;
 }
 
-.login-card {
+.register-card {
     width: min(100%, 465px);
     padding: 43px;
     background: rgba(255,255,255,.94);
@@ -686,7 +686,7 @@ button, input {
     box-shadow: var(--shadow);
 }
 
-.login-card h1 {
+.register-card h1 {
     margin-bottom: 9px;
     color: var(--ink);
     font-size: 32px;
@@ -694,17 +694,17 @@ button, input {
     letter-spacing: -1.2px;
 }
 
-.login-description {
+.register-description {
     margin-bottom: 30px;
     color: var(--muted);
     font-size: 13px;
 }
 
-.login-field {
+.register-field {
     margin-bottom: 19px;
 }
 
-.login-field label {
+.register-field label {
     display: block;
     margin-bottom: 8px;
     color: var(--ink-soft);
@@ -712,7 +712,7 @@ button, input {
     font-weight: 750;
 }
 
-.login-field input {
+.register-field input {
     width: 100%;
     min-height: 51px;
     padding: 12px 15px;
@@ -725,17 +725,17 @@ button, input {
     transition: .2s;
 }
 
-.login-field input::placeholder {
+.register-field input::placeholder {
     color: #a1a9ba;
 }
 
-.login-field input:focus {
+.register-field input:focus {
     background: white;
     border-color: #9b91f4;
     box-shadow: 0 0 0 4px rgba(102,87,232,.10);
 }
 
-.login-submit {
+.register-submit {
     width: 100%;
     min-height: 51px;
     margin-top: 7px;
@@ -743,7 +743,7 @@ button, input {
     border: none;
 }
 
-.login-message {
+.register-message {
     min-height: 20px;
     margin-top: 13px;
     color: var(--primary);
@@ -751,7 +751,7 @@ button, input {
     text-align: center;
 }
 
-.login-footnote {
+.register-footnote {
     margin-top: 21px;
     padding-top: 18px;
     color: var(--muted);
@@ -760,7 +760,7 @@ button, input {
     text-align: center;
 }
 
-.login-page .footer {
+.register-page .footer {
     width: 100%;
     background: rgba(255,255,255,.8);
 }

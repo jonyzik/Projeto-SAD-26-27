@@ -4,7 +4,7 @@
              xmlns:nav="clr-namespace:ParkWise.App.Navigation">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <Border Background="#173C48" CornerRadius="10" Padding="16" Margin="0,0,0,20">
+            <Border Style="{StaticResource StatusBannerStyle}" Margin="0,0,0,20">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Content="Atualizar" Command="{Binding RefreshCommand}"
                             Style="{StaticResource ActionButtonStyle}" Margin="14,0,0,0" />
@@ -42,13 +42,19 @@
 
             <Border Style="{StaticResource CardStyle}" Margin="0,14,12,0">
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Content="Nova simulação"
-                            Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{x:Static nav:PageKeys.NewSimulation}"
-                            Style="{StaticResource ActionButtonStyle}" Margin="16,0,0,0" />
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="16,0,0,0">
+                        <Button Content="Explorar parques"
+                                Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{x:Static nav:PageKeys.ScienceParks}"
+                                Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,10,0" />
+                        <Button Content="Configurar critérios AHP"
+                                Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{x:Static nav:PageKeys.NewSimulation}"
+                                Style="{StaticResource ActionButtonStyle}" />
+                    </StackPanel>
                     <StackPanel>
-                        <TextBlock Text="Pronto para comparar alternativas?" FontSize="18" FontWeight="SemiBold" />
-                        <TextBlock Text="A criação de simulações está em desenvolvimento."
+                        <TextBlock Text="Comece a explorar alternativas" FontSize="18" FontWeight="SemiBold" />
+                        <TextBlock Text="Configure as preferências; a criação de simulações está em desenvolvimento."
                                    Foreground="{StaticResource MutedBrush}" Margin="0,7,0,0" />
                     </StackPanel>
                 </DockPanel>
@@ -56,7 +62,7 @@
 
             <Border Style="{StaticResource CardStyle}" Margin="0,18,12,0">
                 <StackPanel>
-                    <TextBlock Text="Parques recentemente registados" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14" />
+                    <TextBlock Text="{Binding ParkListTitle}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14" />
                     <DataGrid ItemsSource="{Binding RecentParks}" AutoGenerateColumns="False"
                               IsReadOnly="True" CanUserAddRows="False" HeadersVisibility="Column"
                               RowHeaderWidth="0" MinHeight="180">

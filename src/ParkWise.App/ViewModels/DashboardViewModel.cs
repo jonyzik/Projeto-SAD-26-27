@@ -31,6 +31,7 @@ public sealed class DashboardViewModel : ViewModelBase
             OnPropertyChanged(nameof(PricedParkCount));
             OnPropertyChanged(nameof(Indicators));
             OnPropertyChanged(nameof(RecentParks));
+            OnPropertyChanged(nameof(ParkListTitle));
             OnPropertyChanged(nameof(RecentSimulations));
             OnPropertyChanged(nameof(PriceDistribution));
             OnPropertyChanged(nameof(HasNoRecentParks));
@@ -54,6 +55,9 @@ public sealed class DashboardViewModel : ViewModelBase
     public IReadOnlyList<PriceBand> PriceDistribution => Summary?.PriceDistribution ?? [];
     public bool HasNoRecentParks => Summary is not null && RecentParks.Count == 0;
     public bool HasNoRecentSimulations => Summary is not null && RecentSimulations.Count == 0;
+    public string ParkListTitle => Summary?.IsDemonstration == true
+        ? "Parques do catálogo de demonstração"
+        : "Parques recentemente registados";
 
     public IReadOnlyList<DashboardIndicator> Indicators =>
     [
@@ -70,7 +74,7 @@ public sealed class DashboardViewModel : ViewModelBase
             park.MonthlyRentPerSquareMetre is decimal price
                 ? $"{price.ToString("N2", PortugueseCulture)} € / m²"
                 : "Sem preço",
-            ToLocalDate(park.CreatedAtUtc)))
+            Summary?.IsDemonstration == true ? "—" : ToLocalDate(park.CreatedAtUtc)))
         .ToArray() ?? [];
 
     public IReadOnlyList<DashboardSimulationRow> RecentSimulations => Summary?.RecentSimulations
@@ -89,8 +93,8 @@ public sealed class DashboardViewModel : ViewModelBase
         {
             Summary = await _dashboardService.GetSummaryAsync();
             StatusMessage = Summary.IsDemonstration
-                ? "Demonstração: todos os parques, simulações e preços apresentados são fictícios."
-                : "Dados provenientes da base de dados configurada.";
+                ? "DEMONSTRAÇÃO · Os parques e preços são fictícios e partilhados com a pesquisa. Não existem simulações nesta demonstração."
+                : "Indicadores da base de dados configurada. A pesquisa de parques ainda usa dados de demonstração nesta versão.";
         }
         catch (Exception)
         {
