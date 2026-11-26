@@ -34,14 +34,32 @@ public sealed class SelectableParkViewModel(CandidatePark park, Action selection
     }
 }
 
-public sealed class CriterionPreferenceViewModel(CriterionKind kind, string name, Action mandatoryChanged) : ViewModelBase
+/// <summary>Um critério de avaliação com a importância (1 a 9) indicada pelo utilizador e o peso calculado pelo AHP.</summary>
+public sealed class CriterionPreferenceViewModel(CriterionKind kind, string name, Action changed) : ViewModelBase
 {
+    private int _importance = ImportanceScale.Default;
     private bool _isMandatory;
     private decimal _weight;
     private double _barValue;
 
     public CriterionKind Kind { get; } = kind;
     public string Name { get; } = name;
+
+    /// <summary>Importância de 1 a 9; o seletor usa double, por isso o valor é arredondado.</summary>
+    public double Importance
+    {
+        get => _importance;
+        set
+        {
+            var rounded = (int)Math.Clamp(Math.Round(value, MidpointRounding.AwayFromZero), ImportanceScale.Minimum, ImportanceScale.Maximum);
+            if (!SetProperty(ref _importance, rounded)) return;
+            OnPropertyChanged(nameof(ImportanceText));
+            changed();
+        }
+    }
+
+    public int ImportanceValue => _importance;
+    public string ImportanceText => $"{_importance} · {ImportanceScale.Describe(_importance)}";
 
     /// <summary>O preço é sempre calculado; não pode ser marcado como obrigatório.</summary>
     public bool CanBeMandatory => Kind != CriterionKind.CompetitiveRentPerSquareMetre;
@@ -51,7 +69,7 @@ public sealed class CriterionPreferenceViewModel(CriterionKind kind, string name
         get => _isMandatory;
         set
         {
-            if (SetProperty(ref _isMandatory, value && CanBeMandatory)) mandatoryChanged();
+            if (SetProperty(ref _isMandatory, value && CanBeMandatory)) changed();
         }
     }
 
@@ -75,46 +93,6 @@ public sealed class CriterionPreferenceViewModel(CriterionKind kind, string name
     }
 }
 
-public sealed class PairwiseComparisonViewModel(
-    CriterionKind left, string leftName, CriterionKind right, string rightName, Action changed) : ViewModelBase
-{
-    private int _position;
-
-    public CriterionKind Left { get; } = left;
-    public CriterionKind Right { get; } = right;
-    public string LeftName { get; } = leftName;
-    public string RightName { get; } = rightName;
-
-    /// <summary>Posição do seletor: −8 (esquerda extremamente mais importante) a 8 (direita extremamente mais importante).</summary>
-    public double Position
-    {
-        get => _position;
-        set
-        {
-            var rounded = (int)Math.Clamp(Math.Round(value, MidpointRounding.AwayFromZero), -8, 8);
-            if (!SetProperty(ref _position, rounded)) return;
-            OnPropertyChanged(nameof(Description));
-            OnPropertyChanged(nameof(IsNeutral));
-            changed();
-        }
-    }
-
-    public bool IsNeutral => _position == 0;
-
-    public decimal Value => SaatyScale.FromSliderPosition(_position);
-
-    public string Description => _position switch
-    {
-        0 => "Igual importância (1)",
-        < 0 => $"{LeftName}: {SaatyScale.Describe(1 - _position).ToLowerInvariant()} ({1 - _position})",
-        _ => $"{RightName}: {SaatyScale.Describe(1 + _position).ToLowerInvariant()} ({1 + _position})"
-    };
-
-    public CriterionComparison ToComparison() => new(Left, Right, Value);
-
-    public void Load(decimal value) => Position = SaatyScale.ToSliderPosition(value);
-}
-
 public sealed class ResultRowViewModel
 {
     public ResultRowViewModel(ParkSimulationResult result, decimal maxScore)
@@ -123,37 +101,17 @@ public sealed class ResultRowViewModel
         RankText = result.Ranking is int rank ? $"{rank}.º" : "—";
         ScoreText = result.IsEligible ? NumberInput.Percent(result.Score) : "—";
         ScoreBar = maxScore > 0 && result.IsEligible ? (double)(result.Score / maxScore) : 0;
-        MonthlyCostText = NumberInput.Money(result.MonthlyCost);
-        ContractCostText = NumberInput.Money(result.ContractCost);
+        MonthlyCostText = NumberInput.Money(result.Costs?.Monthly);
+        ContractCostText = NumberInput.Money(result.Costs?.ContractTotal);
         StatusText = result.IsEligible ? "Elegível" : string.Join(" ", result.ExclusionReasons);
         StrengthsText = result.Strengths.Count > 0 ? string.Join(" · ", result.Strengths) : "—";
         WeaknessesText = result.Weaknesses.Count > 0 ? string.Join(" · ", result.Weaknesses) : "—";
-
-        if (result.CostBreakdown is { } costs)
-        {
-            CostLines =
-            [
-                new("Renda", NumberInput.Money(costs.Rent)),
-                new("Condomínio e serviços comuns", NumberInput.Money(costs.ServiceCharges)),
-                new("Energia e água", NumberInput.Money(costs.Utilities)),
-                new("Serviços por colaborador", NumberInput.Money(costs.EmployeeServices)),
-                new($"Estacionamento ({costs.ParkingSpaces} lugares)", NumberInput.Money(costs.Parking)),
-                new("Contingência", NumberInput.Money(costs.Contingency)),
-                new("Total mensal", NumberInput.Money(costs.MonthlyTotal)),
-                new("Total anual", NumberInput.Money(costs.AnnualTotal)),
-                new("Instalação (valor único)", NumberInput.Money(costs.SetupCost)),
-                new("Total do contrato", NumberInput.Money(costs.ContractTotal))
-            ];
-        }
-        else
-        {
-            CostLines =
-            [
-                new("Total mensal", NumberInput.Money(result.MonthlyCost)),
-                new("Instalação (valor único)", NumberInput.Money(result.SetupCost)),
-                new("Total do contrato", NumberInput.Money(result.ContractCost))
-            ];
-        }
+        CostLines =
+        [
+            new("Custo mensal (área × preço/m²)", NumberInput.Money(result.Costs?.Monthly)),
+            new("Custo anual", NumberInput.Money(result.Costs?.Annual)),
+            new("Custo total do contrato", NumberInput.Money(result.Costs?.ContractTotal))
+        ];
 
         var maxContribution = result.Contributions.Count > 0 ? result.Contributions.Max(c => c.WeightedContribution) : 0;
         Contributions = result.Contributions

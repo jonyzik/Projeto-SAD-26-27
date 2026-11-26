@@ -45,7 +45,7 @@ public sealed class DemoSimulationDataSource : ISimulationDataSource
                 .Select(outcome => new SimulationListItem(
                     outcome.Id!.Value, outcome.Name, outcome.ExecutedAtUtc,
                     outcome.Results.Count, outcome.RankedResults.Count,
-                    outcome.BestResult?.ParkName, outcome.BestResult?.MonthlyCost,
+                    outcome.BestResult?.ParkName, outcome.BestResult?.Costs?.Monthly,
                     outcome.Consistency.ConsistencyRatio))
                 .ToArray();
             return Task.FromResult(items);

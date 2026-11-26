@@ -14,7 +14,6 @@ public sealed class SimulationResult
     public bool IsEligible { get; set; }
     public string? ExclusionReason { get; set; }
     public decimal? EstimatedMonthlyCost { get; set; }
-    public decimal? EstimatedSetupCost { get; set; }
     public decimal? EstimatedContractCost { get; set; }
     public string? Strengths { get; set; }
     public string? Weaknesses { get; set; }

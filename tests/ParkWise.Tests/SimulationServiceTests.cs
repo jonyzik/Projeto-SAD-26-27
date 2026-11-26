@@ -13,7 +13,7 @@ public sealed class SimulationServiceTests
     {
         var user = Guid.NewGuid();
         var source = new FakeSource([Park("A", 10m), Park("B", 12m)]);
-        var service = new SimulationService(source, new FakeStore(), new EigenvectorAhpEngine(), new FakeUser(user));
+        var service = new SimulationService(source, new EigenvectorAhpEngine(), new FakeUser(user));
 
         var outcome = await service.RunAsync(Request(source.Parks));
         var id = await service.SaveAsync(outcome);
@@ -22,22 +22,6 @@ public sealed class SimulationServiceTests
         Assert.AreEqual(id, source.SavedId);
         Assert.AreEqual(user, source.SavedUser);
         await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => service.SaveAsync(outcome with { Id = id }));
-    }
-
-    [TestMethod]
-    public async Task DefaultParametersAreValidatedBeforeBeingStored()
-    {
-        var store = new FakeStore();
-        var service = new SimulationService(new FakeSource([]), store, new EigenvectorAhpEngine(), new FakeUser(null));
-        var invalid = SimulationParameters.Default with { Needs = CompanyNeeds.Default with { EmployeeCount = 0 } };
-
-        await Assert.ThrowsExactlyAsync<SimulationValidationException>(() => service.SaveDefaultParametersAsync(invalid));
-        Assert.AreEqual(SimulationParameters.Default, await service.GetDefaultParametersAsync());
-
-        var valid = SimulationParameters.Default with { Needs = CompanyNeeds.Default with { EmployeeCount = 25 } };
-        await service.SaveDefaultParametersAsync(valid);
-        Assert.AreEqual(25, (await service.GetDefaultParametersAsync()).Needs.EmployeeCount);
-        Assert.AreEqual(SimulationParameters.Default, await service.ResetDefaultParametersAsync());
     }
 
     private sealed class FakeSource(IReadOnlyList<CandidatePark> parks) : ISimulationDataSource
@@ -61,22 +45,6 @@ public sealed class SimulationServiceTests
         public Task<SimulationOutcome?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
             Task.FromResult<SimulationOutcome?>(null);
         public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default) => Task.FromResult(false);
-    }
-
-    private sealed class FakeStore : ISimulationParametersStore
-    {
-        private SimulationParameters _value = SimulationParameters.Default;
-        public Task<SimulationParameters> LoadAsync(CancellationToken cancellationToken = default) => Task.FromResult(_value);
-        public Task SaveAsync(SimulationParameters parameters, CancellationToken cancellationToken = default)
-        {
-            _value = parameters;
-            return Task.CompletedTask;
-        }
-        public Task ResetAsync(CancellationToken cancellationToken = default)
-        {
-            _value = SimulationParameters.Default;
-            return Task.CompletedTask;
-        }
     }
 
     private sealed class FakeUser(Guid? id) : ICurrentUserAccessor

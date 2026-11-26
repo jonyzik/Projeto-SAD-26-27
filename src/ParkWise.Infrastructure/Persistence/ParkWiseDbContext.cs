@@ -72,28 +72,13 @@ public sealed class ParkWiseDbContext(DbContextOptions<ParkWiseDbContext> option
             entity.HasOne(x => x.User).WithMany(x => x.Simulations)
                 .HasForeignKey(x => x.UserId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
 
-            // Necessidades da empresa e parâmetros de custo ficam em colunas da própria tabela Simulations.
+            // Área e duração do contrato ficam em colunas da própria tabela Simulations.
             entity.OwnsOne(x => x.Requirements, owned =>
             {
                 owned.Property(p => p.RequiredAreaSquareMetres).HasColumnName("RequiredAreaSquareMetres").HasPrecision(12, 2);
-                owned.Property(p => p.EmployeeCount).HasColumnName("EmployeeCount");
                 owned.Property(p => p.ContractDurationMonths).HasColumnName("ContractDurationMonths");
-                owned.Property(p => p.MaxMonthlyBudget).HasColumnName("MaxMonthlyBudget").HasPrecision(14, 2);
-                owned.Property(p => p.PreferredCity).HasColumnName("PreferredCity").HasMaxLength(120);
             });
             entity.Navigation(x => x.Requirements).IsRequired();
-
-            entity.OwnsOne(x => x.CostSettings, owned =>
-            {
-                owned.Property(p => p.ServiceChargePerSquareMetre).HasColumnName("ServiceChargePerSquareMetre").HasPrecision(12, 2);
-                owned.Property(p => p.UtilitiesPerSquareMetre).HasColumnName("UtilitiesPerSquareMetre").HasPrecision(12, 2);
-                owned.Property(p => p.ServicesPerEmployee).HasColumnName("ServicesPerEmployee").HasPrecision(12, 2);
-                owned.Property(p => p.ParkingSpacesRatio).HasColumnName("ParkingSpacesRatio").HasPrecision(5, 4);
-                owned.Property(p => p.ParkingCostPerSpace).HasColumnName("ParkingCostPerSpace").HasPrecision(12, 2);
-                owned.Property(p => p.SetupCostPerSquareMetre).HasColumnName("SetupCostPerSquareMetre").HasPrecision(12, 2);
-                owned.Property(p => p.ContingencyPercentage).HasColumnName("ContingencyPercentage").HasPrecision(5, 2);
-            });
-            entity.Navigation(x => x.CostSettings).IsRequired();
         });
 
         modelBuilder.Entity<SimulationCriterionWeight>(entity =>
@@ -119,7 +104,6 @@ public sealed class ParkWiseDbContext(DbContextOptions<ParkWiseDbContext> option
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Score).HasPrecision(12, 8);
             entity.Property(x => x.EstimatedMonthlyCost).HasPrecision(14, 2);
-            entity.Property(x => x.EstimatedSetupCost).HasPrecision(14, 2);
             entity.Property(x => x.EstimatedContractCost).HasPrecision(16, 2);
             entity.Property(x => x.ExclusionReason).HasMaxLength(2000);
             entity.Property(x => x.Strengths).HasMaxLength(2000);

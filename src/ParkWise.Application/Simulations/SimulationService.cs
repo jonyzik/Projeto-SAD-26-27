@@ -6,7 +6,6 @@ namespace ParkWise.Application.Simulations;
 
 public sealed class SimulationService(
     ISimulationDataSource dataSource,
-    ISimulationParametersStore parametersStore,
     IAhpEngine ahpEngine,
     ICurrentUserAccessor currentUser,
     TimeProvider? timeProvider = null) : ISimulationService
@@ -17,12 +16,12 @@ public sealed class SimulationService(
     public Task<CandidateParkCatalog> GetCandidateParksAsync(CancellationToken cancellationToken = default) =>
         dataSource.LoadCandidateParksAsync(cancellationToken);
 
-    public WeightsPreview PreviewWeights(IEnumerable<CriterionComparison> comparisons,
+    public WeightsPreview PreviewWeights(IReadOnlyDictionary<CriterionKind, int> importance,
         IReadOnlyCollection<CriterionKind>? mandatoryCriteria = null) =>
-        _engine.CalculateWeights(comparisons, mandatoryCriteria);
+        _engine.CalculateWeights(importance, mandatoryCriteria);
 
-    public OperationalCostBreakdown EstimateCosts(decimal monthlyRentPerSquareMetre, SimulationParameters parameters) =>
-        OperationalCostCalculator.Calculate(monthlyRentPerSquareMetre, parameters.Needs, parameters.Costs);
+    public OperationalCost EstimateCosts(decimal monthlyRentPerSquareMetre, CompanyNeeds needs) =>
+        OperationalCostCalculator.Calculate(monthlyRentPerSquareMetre, needs);
 
     public async Task<SimulationOutcome> RunAsync(SimulationRequest request, CancellationToken cancellationToken = default)
     {
@@ -46,20 +45,4 @@ public sealed class SimulationService(
 
     public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default) =>
         dataSource.DeleteAsync(id, cancellationToken);
-
-    public Task<SimulationParameters> GetDefaultParametersAsync(CancellationToken cancellationToken = default) =>
-        parametersStore.LoadAsync(cancellationToken);
-
-    public Task SaveDefaultParametersAsync(SimulationParameters parameters, CancellationToken cancellationToken = default)
-    {
-        var errors = SimulationRequestValidator.ValidateParameters(parameters);
-        if (errors.Count > 0) throw new SimulationValidationException(errors);
-        return parametersStore.SaveAsync(parameters, cancellationToken);
-    }
-
-    public async Task<SimulationParameters> ResetDefaultParametersAsync(CancellationToken cancellationToken = default)
-    {
-        await parametersStore.ResetAsync(cancellationToken);
-        return await parametersStore.LoadAsync(cancellationToken);
-    }
 }

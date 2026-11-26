@@ -14,7 +14,6 @@ public sealed class Simulation
 
     public DateTime CreatedAtUtc { get; set; }
     public CompanyRequirements Requirements { get; set; } = new();
-    public OperationalCostSettings CostSettings { get; set; } = new();
     public decimal? ConsistencyRatio { get; set; }
 
     public ICollection<SimulationCriterionWeight> CriterionWeights { get; set; } = new List<SimulationCriterionWeight>();

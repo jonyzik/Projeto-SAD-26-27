@@ -20,26 +20,17 @@ public static class SimulationRequestValidator
         if (request.Description?.Length > 1000)
             errors.Add("A descrição não pode ter mais de 1000 caracteres.");
 
-        errors.AddRange(ValidateParameters(request.Parameters));
+        errors.AddRange(ValidateNeeds(request.Needs));
 
         var distinctParks = request.CandidateParkIds.Distinct().Count();
         if (distinctParks < MinimumCandidateParks)
             errors.Add($"Selecione pelo menos {MinimumCandidateParks} parques para comparar.");
 
         var knownCriteria = EvaluationCriteria.Required.Select(criterion => criterion.Kind).ToHashSet();
-        foreach (var comparison in request.Comparisons)
-        {
-            if (!knownCriteria.Contains(comparison.Left) || !knownCriteria.Contains(comparison.Right) || comparison.Left == comparison.Right)
-            {
-                errors.Add("Existe uma comparação entre critérios inválida.");
-                break;
-            }
-            if (!SaatyScale.IsValid(comparison.Value))
-            {
-                errors.Add("As comparações entre critérios têm de usar a escala de Saaty (1/9 a 9).");
-                break;
-            }
-        }
+        if (request.CriterionImportance.Keys.Any(kind => !knownCriteria.Contains(kind)))
+            errors.Add("Foi indicada a importância de um critério desconhecido.");
+        if (request.CriterionImportance.Values.Any(value => !ImportanceScale.IsValid(value)))
+            errors.Add($"A importância de cada critério tem de estar entre {ImportanceScale.Minimum} e {ImportanceScale.Maximum}.");
 
         if (request.MandatoryCriteria.Any(kind => !knownCriteria.Contains(kind)))
             errors.Add("Foi indicado um critério obrigatório desconhecido.");
@@ -47,30 +38,14 @@ public static class SimulationRequestValidator
         return errors;
     }
 
-    public static IReadOnlyList<string> ValidateParameters(SimulationParameters parameters)
+    public static IReadOnlyList<string> ValidateNeeds(CompanyNeeds needs)
     {
-        ArgumentNullException.ThrowIfNull(parameters);
+        ArgumentNullException.ThrowIfNull(needs);
         var errors = new List<string>();
-        var needs = parameters.Needs;
-        var costs = parameters.Costs;
-
         if (needs.RequiredAreaSquareMetres <= 0)
             errors.Add("A área necessária tem de ser superior a 0 m².");
-        if (needs.EmployeeCount < 1)
-            errors.Add("O número de colaboradores tem de ser pelo menos 1.");
         if (needs.ContractDurationMonths is < 1 or > MaximumContractMonths)
             errors.Add($"A duração do contrato tem de estar entre 1 e {MaximumContractMonths} meses.");
-        if (needs.MaxMonthlyBudget is <= 0)
-            errors.Add("O orçamento mensal máximo, quando indicado, tem de ser superior a 0 €.");
-
-        if (costs.ServiceChargePerSquareMetre < 0 || costs.UtilitiesPerSquareMetre < 0 ||
-            costs.ServicesPerEmployee < 0 || costs.ParkingCostPerSpace < 0 || costs.SetupCostPerSquareMetre < 0)
-            errors.Add("Os parâmetros de custo não podem ser negativos.");
-        if (costs.ParkingSpacesRatio is < 0 or > 1)
-            errors.Add("A proporção de lugares de estacionamento tem de estar entre 0 e 1.");
-        if (costs.ContingencyPercentage is < 0 or > 100)
-            errors.Add("A margem de contingência tem de estar entre 0 % e 100 %.");
-
         return errors;
     }
 }

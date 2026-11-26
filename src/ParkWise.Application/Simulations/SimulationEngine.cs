@@ -5,8 +5,10 @@ using ParkWise.Core.Enums;
 namespace ParkWise.Application.Simulations;
 
 /// <summary>
-/// Executa uma simulação: valida o pedido, calcula os pesos dos critérios com o AHP, calcula os custos
-/// operacionais, exclui os parques que não satisfazem as necessidades da empresa e ordena os restantes.
+/// Executa uma simulação: valida o pedido, calcula os pesos dos critérios com o AHP (a partir da importância
+/// de 1 a 9 que o utilizador dá a cada critério), calcula os custos
+/// operacionais (área × preço/m²), exclui os parques sem preço, com avaliação incompleta ou sem um critério
+/// obrigatório, e ordena os restantes.
 /// O critério «Preço competitivo da área alugada» é avaliado com o custo operacional mensal calculado
 /// (menor custo → maior prioridade), integrando os custos no modelo AHP.
 /// </summary>
@@ -23,10 +25,15 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
 
     public static string NameOf(CriterionKind kind) => CriterionNames[kind];
 
+    /// <summary>
+    /// Calcula os pesos dos critérios com o AHP a partir da importância (1 a 9) de cada um.
+    /// Critérios sem importância indicada assumem o valor intermédio (5).
+    /// </summary>
     public WeightsPreview CalculateWeights(
-        IEnumerable<CriterionComparison> comparisons, IReadOnlyCollection<CriterionKind>? mandatoryCriteria = null)
+        IReadOnlyDictionary<CriterionKind, int> importance, IReadOnlyCollection<CriterionKind>? mandatoryCriteria = null)
     {
-        var matrix = PairwiseComparisonMatrix.Build(Criteria, comparisons);
+        ArgumentNullException.ThrowIfNull(importance);
+        var matrix = PairwiseComparisonMatrix.FromImportance(Criteria, importance);
         var priorities = ahpEngine.CalculatePriorities(matrix);
         if (priorities.Weights.Count != Criteria.Count)
             throw new InvalidOperationException("O motor AHP devolveu um número de pesos inesperado.");
@@ -34,7 +41,9 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
         var mandatory = mandatoryCriteria ?? [];
         var weights = Criteria
             .Select((kind, i) => new CriterionWeight(
-                kind, CriterionNames[kind], Round((decimal)priorities.Weights[i], 6), mandatory.Contains(kind)))
+                kind, CriterionNames[kind],
+                importance.TryGetValue(kind, out var value) ? value : ImportanceScale.Default,
+                Round((decimal)priorities.Weights[i], 6), mandatory.Contains(kind)))
             .ToArray();
 
         return new WeightsPreview(weights, new ConsistencyCheck(
@@ -56,15 +65,9 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
             errors.Add("Um ou mais parques selecionados já não existem no catálogo.");
         if (errors.Count > 0) throw new SimulationValidationException(errors);
 
-        var preview = CalculateWeights(request.Comparisons, request.MandatoryCriteria);
-        if (!preview.Consistency.IsAcceptable)
-            throw new SimulationValidationException(
-            [
-                $"As comparações entre critérios são inconsistentes (RC = {preview.Consistency.ConsistencyRatio:0.000}; " +
-                $"o máximo aceitável é {ConsistencyCheck.AcceptableRatio:0.00}). Reveja as comparações antes de executar."
-            ]);
+        var preview = CalculateWeights(request.CriterionImportance, request.MandatoryCriteria);
 
-        var needs = request.Parameters.Needs;
+        var needs = request.Needs;
         var evaluated = selectedIds
             .Select(id => parksById[id])
             .Select(park => Evaluate(park, request, needs))
@@ -80,7 +83,7 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
             {
                 var kind = Criteria[c];
                 var raw = eligible.Select(item => kind == CriterionKind.CompetitiveRentPerSquareMetre
-                    ? 1.0 / Math.Max((double)item.Costs!.MonthlyTotal, 0.01)
+                    ? 1.0 / Math.Max((double)item.Costs!.Monthly, 0.01)
                     : Math.Max(0, (double)item.Park.Scores[kind])).ToArray();
                 var sum = raw.Sum();
                 for (var a = 0; a < eligible.Length; a++)
@@ -95,7 +98,7 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
         var ranking = eligible
             .Select((item, index) => (item, index))
             .OrderByDescending(x => globalPriorities[x.index])
-            .ThenBy(x => x.item.Costs!.MonthlyTotal)
+            .ThenBy(x => x.item.Costs!.Monthly)
             .ThenBy(x => x.item.Park.Name, StringComparer.CurrentCulture)
             .Select((x, position) => (x.item.Park.Id, Rank: position + 1))
             .ToDictionary(x => x.Id, x => x.Rank);
@@ -113,14 +116,12 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
             results.Add(new ParkSimulationResult(
                 item.Park.Id, item.Park.Name, item.Park.City, ranking[item.Park.Id],
                 Round((decimal)globalPriorities[a], 6), true, [],
-                item.Costs!.MonthlyTotal, item.Costs.SetupCost, item.Costs.ContractTotal, item.Costs,
-                contributions, strengths, weaknesses));
+                item.Costs, contributions, strengths, weaknesses));
         }
 
         results.AddRange(evaluated.Where(item => item.Reasons.Count > 0).Select(item => new ParkSimulationResult(
             item.Park.Id, item.Park.Name, item.Park.City, null, 0m, false, item.Reasons,
-            item.Costs?.MonthlyTotal, item.Costs?.SetupCost, item.Costs?.ContractTotal, item.Costs,
-            [], [], [])));
+            item.Costs, [], [], [])));
 
         var ordered = results
             .OrderBy(result => result.Ranking ?? int.MaxValue)
@@ -132,10 +133,9 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
             Name: request.Name.Trim(),
             Description: string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim(),
             ExecutedAtUtc: executedAtUtc,
-            Parameters: request.Parameters,
+            Needs: request.Needs,
             Weights: preview.Weights,
             Consistency: preview.Consistency,
-            Comparisons: request.Comparisons.ToArray(),
             Results: ordered,
             IsDemonstration: isDemonstration);
     }
@@ -143,12 +143,12 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
     private static EvaluatedPark Evaluate(CandidatePark park, SimulationRequest request, CompanyNeeds needs)
     {
         var reasons = new List<string>();
-        OperationalCostBreakdown? costs = null;
+        OperationalCost? costs = null;
 
         if (park.MonthlyRentPerSquareMetre is not > 0)
             reasons.Add("Sem preço por m² válido.");
         else
-            costs = OperationalCostCalculator.Calculate(park.MonthlyRentPerSquareMetre.Value, needs, request.Parameters.Costs);
+            costs = OperationalCostCalculator.Calculate(park.MonthlyRentPerSquareMetre.Value, needs);
 
         var missing = Criteria
             .Where(kind => kind != CriterionKind.CompetitiveRentPerSquareMetre && !park.Scores.ContainsKey(kind))
@@ -159,13 +159,6 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
         foreach (var kind in request.MandatoryCriteria.Where(kind => kind != CriterionKind.CompetitiveRentPerSquareMetre))
             if (park.Scores.TryGetValue(kind, out var score) && score <= 0)
                 reasons.Add($"Não cumpre o critério obrigatório «{CriterionNames[kind]}».");
-
-        if (costs is not null && needs.MaxMonthlyBudget is decimal budget && costs.MonthlyTotal > budget)
-            reasons.Add($"Custo mensal ({costs.MonthlyTotal:N2} €) acima do orçamento ({budget:N2} €).");
-
-        if (!string.IsNullOrWhiteSpace(needs.PreferredCity) &&
-            !string.Equals(park.City.Trim(), needs.PreferredCity.Trim(), StringComparison.CurrentCultureIgnoreCase))
-            reasons.Add($"Localização diferente da pretendida ({needs.PreferredCity.Trim()}).");
 
         return new EvaluatedPark(park, costs, reasons);
     }
@@ -193,5 +186,5 @@ public sealed class SimulationEngine(IAhpEngine ahpEngine)
     private static decimal Round(decimal value, int decimals) =>
         Math.Round(value, decimals, MidpointRounding.AwayFromZero);
 
-    private sealed record EvaluatedPark(CandidatePark Park, OperationalCostBreakdown? Costs, List<string> Reasons);
+    private sealed record EvaluatedPark(CandidatePark Park, OperationalCost? Costs, List<string> Reasons);
 }

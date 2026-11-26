@@ -22,12 +22,12 @@ internal static class SimulationTestData
     }
 
     public static SimulationRequest Request(IEnumerable<CandidatePark> parks,
-        IReadOnlyList<CriterionComparison>? comparisons = null,
-        SimulationParameters? parameters = null,
+        IReadOnlyDictionary<CriterionKind, int>? importance = null,
+        CompanyNeeds? needs = null,
         IReadOnlyCollection<CriterionKind>? mandatory = null,
         string name = "Teste") =>
-        new(name, null, parameters ?? SimulationParameters.Default,
+        new(name, null, needs ?? CompanyNeeds.Default,
             parks.Select(park => park.Id).ToArray(),
-            comparisons ?? [],
+            importance ?? new Dictionary<CriterionKind, int>(),
             mandatory ?? []);
 }

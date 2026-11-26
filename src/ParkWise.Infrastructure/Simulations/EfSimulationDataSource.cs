@@ -47,8 +47,6 @@ public sealed class EfSimulationDataSource(IDbContextFactory<ParkWiseDbContext> 
             ? id
             : throw new InvalidOperationException("Os critérios de avaliação não existem na base de dados. Aplique as migrações.");
 
-        var needs = outcome.Parameters.Needs;
-        var costs = outcome.Parameters.Costs;
         var simulation = new Simulation
         {
             Id = Guid.NewGuid(),
@@ -59,21 +57,8 @@ public sealed class EfSimulationDataSource(IDbContextFactory<ParkWiseDbContext> 
             ConsistencyRatio = outcome.Consistency.ConsistencyRatio,
             Requirements = new CompanyRequirements
             {
-                RequiredAreaSquareMetres = needs.RequiredAreaSquareMetres,
-                EmployeeCount = needs.EmployeeCount,
-                ContractDurationMonths = needs.ContractDurationMonths,
-                MaxMonthlyBudget = needs.MaxMonthlyBudget,
-                PreferredCity = needs.PreferredCity
-            },
-            CostSettings = new OperationalCostSettings
-            {
-                ServiceChargePerSquareMetre = costs.ServiceChargePerSquareMetre,
-                UtilitiesPerSquareMetre = costs.UtilitiesPerSquareMetre,
-                ServicesPerEmployee = costs.ServicesPerEmployee,
-                ParkingSpacesRatio = costs.ParkingSpacesRatio,
-                ParkingCostPerSpace = costs.ParkingCostPerSpace,
-                SetupCostPerSquareMetre = costs.SetupCostPerSquareMetre,
-                ContingencyPercentage = costs.ContingencyPercentage
+                RequiredAreaSquareMetres = outcome.Needs.RequiredAreaSquareMetres,
+                ContractDurationMonths = outcome.Needs.ContractDurationMonths
             }
         };
 
@@ -83,16 +68,8 @@ public sealed class EfSimulationDataSource(IDbContextFactory<ParkWiseDbContext> 
                 Id = Guid.NewGuid(),
                 EvaluationCriterionId = CriterionId(weight.Kind),
                 Weight = weight.Weight,
+                Importance = weight.Importance,
                 IsMandatory = weight.IsMandatory
-            });
-
-        foreach (var comparison in outcome.Comparisons)
-            simulation.AhpComparisons.Add(new AhpComparison
-            {
-                Id = Guid.NewGuid(),
-                LeftCriterionId = CriterionId(comparison.Left),
-                RightCriterionId = CriterionId(comparison.Right),
-                PreferenceValue = Math.Round(comparison.Value, 8)
             });
 
         foreach (var result in outcome.Results)
@@ -104,9 +81,8 @@ public sealed class EfSimulationDataSource(IDbContextFactory<ParkWiseDbContext> 
                 Score = result.Score,
                 IsEligible = result.IsEligible,
                 ExclusionReason = Join(result.ExclusionReasons),
-                EstimatedMonthlyCost = result.MonthlyCost,
-                EstimatedSetupCost = result.SetupCost,
-                EstimatedContractCost = result.ContractCost,
+                EstimatedMonthlyCost = result.Costs?.Monthly,
+                EstimatedContractCost = result.Costs?.ContractTotal,
                 Strengths = Join(result.Strengths),
                 Weaknesses = Join(result.Weaknesses)
             });
@@ -146,28 +122,22 @@ public sealed class EfSimulationDataSource(IDbContextFactory<ParkWiseDbContext> 
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var simulation = await context.Simulations.AsNoTracking()
             .Include(s => s.CriterionWeights).ThenInclude(w => w.EvaluationCriterion)
-            .Include(s => s.AhpComparisons).ThenInclude(c => c.LeftCriterion)
-            .Include(s => s.AhpComparisons).ThenInclude(c => c.RightCriterion)
             .Include(s => s.Results).ThenInclude(r => r.TechnologyPark)
             .AsSplitQuery()
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
         if (simulation is null) return null;
 
-        var requirements = simulation.Requirements;
-        var settings = simulation.CostSettings;
-        var parameters = new SimulationParameters(
-            new CompanyNeeds(requirements.RequiredAreaSquareMetres, requirements.EmployeeCount,
-                requirements.ContractDurationMonths, requirements.MaxMonthlyBudget, requirements.PreferredCity),
-            new CostParameters(settings.ServiceChargePerSquareMetre, settings.UtilitiesPerSquareMetre,
-                settings.ServicesPerEmployee, settings.ParkingSpacesRatio, settings.ParkingCostPerSpace,
-                settings.SetupCostPerSquareMetre, settings.ContingencyPercentage));
+        var needs = new CompanyNeeds(
+            simulation.Requirements.RequiredAreaSquareMetres, simulation.Requirements.ContractDurationMonths);
 
+        // Simulações gravadas antes de existir a coluna Importance têm 0: a nota é reconstruída a partir do peso.
+        var maxWeight = simulation.CriterionWeights.Select(w => w.Weight).DefaultIfEmpty(0m).Max();
         var weights = simulation.CriterionWeights
             .OrderBy(w => w.EvaluationCriterion.Kind)
-            .Select(w => new CriterionWeight(w.EvaluationCriterion.Kind, w.EvaluationCriterion.Name, w.Weight, w.IsMandatory))
-            .ToArray();
-        var comparisons = simulation.AhpComparisons
-            .Select(c => new CriterionComparison(c.LeftCriterion.Kind, c.RightCriterion.Kind, c.PreferenceValue))
+            .Select(w => new CriterionWeight(
+                w.EvaluationCriterion.Kind, w.EvaluationCriterion.Name,
+                ImportanceScale.IsValid(w.Importance) ? w.Importance : ImportanceFromWeight(w.Weight, maxWeight),
+                w.Weight, w.IsMandatory))
             .ToArray();
         var results = simulation.Results
             .OrderBy(r => r.IsEligible ? r.Ranking : int.MaxValue)
@@ -175,15 +145,17 @@ public sealed class EfSimulationDataSource(IDbContextFactory<ParkWiseDbContext> 
             .Select(r => new ParkSimulationResult(
                 r.TechnologyParkId, r.TechnologyPark.Name, r.TechnologyPark.City,
                 r.IsEligible ? r.Ranking : null, r.Score, r.IsEligible, Split(r.ExclusionReason),
-                r.EstimatedMonthlyCost, r.EstimatedSetupCost, r.EstimatedContractCost,
-                CostBreakdown: null, Contributions: [], Split(r.Strengths), Split(r.Weaknesses)))
+                r.EstimatedMonthlyCost is decimal monthly
+                    ? new OperationalCost(monthly, monthly * 12, r.EstimatedContractCost ?? monthly * needs.ContractDurationMonths)
+                    : null,
+                Contributions: [], Split(r.Strengths), Split(r.Weaknesses)))
             .ToArray();
 
         // Só a razão de consistência é persistida; λmax e IC são recalculados ao reexecutar a simulação.
         var consistency = new ConsistencyCheck(0m, 0m, simulation.ConsistencyRatio ?? 0m);
 
         return new SimulationOutcome(simulation.Id, simulation.Name, simulation.Description, simulation.CreatedAtUtc,
-            parameters, weights, consistency, comparisons, results, IsDemonstration: false);
+            needs, weights, consistency, results, IsDemonstration: false);
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -195,6 +167,12 @@ public sealed class EfSimulationDataSource(IDbContextFactory<ParkWiseDbContext> 
         await context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    private static int ImportanceFromWeight(decimal weight, decimal maxWeight) =>
+        maxWeight <= 0
+            ? ImportanceScale.Default
+            : (int)Math.Clamp(Math.Round(weight / maxWeight * ImportanceScale.Maximum, MidpointRounding.AwayFromZero),
+                ImportanceScale.Minimum, ImportanceScale.Maximum);
 
     private static string? Join(IReadOnlyList<string> values) =>
         values.Count == 0 ? null : string.Join(Separator, values);

@@ -34,7 +34,6 @@ public static class DependencyInjection
         // registando outra implementação de IAhpEngine antes desta chamada.
         services.TryAddSingleton<IAhpEngine, EigenvectorAhpEngine>();
         services.TryAddSingleton<ICurrentUserAccessor, AnonymousCurrentUserAccessor>();
-        services.AddSingleton<ISimulationParametersStore>(_ => new JsonSimulationParametersStore());
         services.AddSingleton<ISimulationService, SimulationService>();
 
         return services;
