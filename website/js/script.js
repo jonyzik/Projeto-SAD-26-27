@@ -1,63 +1,40 @@
 
-// Menu de navegação para dispositivos móveis
-
-const menuToggle = document.getElementById('menu-toggle');
-const navLinks = document.getElementById('nav-links');
+const menuToggle = document.getElementById("menu-toggle");
+const navLinks = document.getElementById("nav-links");
 
 if (menuToggle && navLinks) {
+    const closeMenu = (restoreFocus = false) => {
+        navLinks.classList.remove("active");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Abrir menu");
 
-    menuToggle.addEventListener('click', () => {
+        if (restoreFocus) {
+            menuToggle.focus();
+        }
+    };
 
-        const isOpen = navLinks.classList.toggle('active');
-
-        menuToggle.setAttribute(
-            'aria-expanded',
-            String(isOpen)
-        );
-
+    menuToggle.addEventListener("click", () => {
+        const isOpen = navLinks.classList.toggle("active");
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+        menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
     });
 
-    navLinks.querySelectorAll('a').forEach(link => {
+    navLinks.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element) || !event.target.closest("a")) {
+            return;
+        }
 
-        link.addEventListener('click', () => {
-
-            navLinks.classList.remove('active');
-
-            menuToggle.setAttribute(
-                'aria-expanded',
-                'false'
-            );
-
-        });
-
+        closeMenu();
     });
 
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && navLinks.classList.contains("active")) {
+            closeMenu(true);
+        }
+    });
 }
 
-
-// Atualizar automaticamente o ano do rodapé
-
-const currentYear = document.getElementById('current-year');
-
+const currentYear = document.getElementById("current-year");
 if (currentYear) {
     currentYear.textContent = new Date().getFullYear();
-}
-
-
-// Formulário de registo (apenas interface visual)
-
-const registerForm = document.getElementById('register-form');
-const registerMessage = document.getElementById('register-message');
-
-if (registerForm && registerMessage) {
-
-    registerForm.addEventListener('submit', (event) => {
-
-        event.preventDefault();
-
-        registerMessage.textContent =
-            'O registo ainda não está ligado ao servidor .NET.';
-
-    });
-
 }

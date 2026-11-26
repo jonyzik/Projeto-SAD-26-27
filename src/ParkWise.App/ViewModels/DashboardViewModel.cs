@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Diagnostics;
 using System.Windows.Input;
 using ParkWise.Application.Dashboard;
 
@@ -14,7 +15,12 @@ public sealed class DashboardViewModel : ViewModelBase
     public DashboardViewModel(IDashboardService dashboardService)
     {
         _dashboardService = dashboardService;
-        RefreshCommand = new AsyncRelayCommand(LoadAsync);
+        RefreshCommand = new AsyncRelayCommand(LoadAsync, exception =>
+        {
+            Trace.TraceError($"Dashboard refresh command failed: {exception}");
+            Summary = null;
+            StatusMessage = "Falha ao carregar os dados. Verifique a ligação.";
+        });
     }
 
     public ICommand RefreshCommand { get; }
@@ -56,15 +62,15 @@ public sealed class DashboardViewModel : ViewModelBase
     public bool HasNoRecentParks => Summary is not null && RecentParks.Count == 0;
     public bool HasNoRecentSimulations => Summary is not null && RecentSimulations.Count == 0;
     public string ParkListTitle => Summary?.IsDemonstration == true
-        ? "Parques do catálogo de demonstração"
-        : "Parques recentemente registados";
+        ? "Parques de demonstração"
+        : "Parques recentes";
 
     public IReadOnlyList<DashboardIndicator> Indicators =>
     [
-        new("Parques registados", Summary?.TotalParks.ToString(PortugueseCulture) ?? "—", "Total no catálogo", "\uE80D"),
-        new("Simulações realizadas", Summary?.TotalSimulations.ToString(PortugueseCulture) ?? "—", "Simulações guardadas", "\uE7C3"),
-        new("Disponíveis para comparação", Summary?.ComparableParks.ToString(PortugueseCulture) ?? "—", "Preço válido e 9 critérios avaliados", "\uE8B7"),
-        new("Preço médio de aluguer", AveragePriceText, "Por m² e por mês", "\uE8D4")
+        new("Parques", Summary?.TotalParks.ToString(PortugueseCulture) ?? "—", "Total no catálogo", "\uE80D"),
+        new("Simulações", Summary?.TotalSimulations.ToString(PortugueseCulture) ?? "—", "Simulações guardadas", "\uE7C3"),
+        new("Disponíveis para comparar", Summary?.ComparableParks.ToString(PortugueseCulture) ?? "—", "Preço válido e critérios avaliados", "\uE8B7"),
+        new("Preço médio mensal", AveragePriceText, "Por m²", "\uE8D4")
     ];
 
     public IReadOnlyList<DashboardParkRow> RecentParks => Summary?.RecentParks
@@ -93,13 +99,14 @@ public sealed class DashboardViewModel : ViewModelBase
         {
             Summary = await _dashboardService.GetSummaryAsync();
             StatusMessage = Summary.IsDemonstration
-                ? "DEMONSTRAÇÃO · Os parques e preços são fictícios e partilhados com a pesquisa. Não existem simulações nesta demonstração."
-                : "Indicadores da base de dados configurada. A pesquisa de parques ainda usa dados de demonstração nesta versão.";
+                ? "Demonstração · dados fictícios"
+                : "Dados da base de dados";
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            Trace.TraceError($"Failed to load dashboard data: {exception}");
             Summary = null;
-            StatusMessage = "Não foi possível carregar os indicadores. Verifique a ligação à base de dados e tente atualizar.";
+            StatusMessage = "Falha ao carregar os dados. Verifique a ligação.";
         }
     }
 }

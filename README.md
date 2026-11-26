@@ -2,7 +2,7 @@
 
 Projeto académico da unidade curricular de Sistemas de Apoio à Decisão, Licenciatura em Engenharia Informática do ISPGAYA, ano letivo 2026/2027. A distribuição atual do trabalho envolve João, Francisco, Melão, Guilherme, Rodrigo e Pinto.
 
-O ParkWise será uma aplicação desktop Windows para apoiar a escolha de parques de ciência e tecnologia. A avaliação futura usará AHP, custos operacionais e os nove critérios definidos em [`EvaluationCriteria.cs`](src/ParkWise.Core/EvaluationCriteria.cs).
+O ParkWise é uma aplicação desktop Windows para apoiar a escolha de parques de ciência e tecnologia. A avaliação dos parques usa nove critérios definidos em [`EvaluationCriteria.cs`](src/ParkWise.Core/EvaluationCriteria.cs); a comparação AHP inclui também a localização preferida (cidade), num total de dez critérios.
 
 ## Estado atual do desenvolvimento
 
@@ -11,8 +11,9 @@ O ParkWise será uma aplicação desktop Windows para apoiar a escolha de parque
 - Sem ligação configurada, a dashboard usa os mesmos **seis parques fictícios** da pesquisa, identificados na interface, e apresenta zero simulações. Com ligação configurada, lê a base de dados através de EF Core; se a leitura falhar, apresenta um erro em vez de números fictícios.
 - Entidades fundamentais e `DbContext` preparados para SQL Server Express. Não há migrações nem criação automática da base de dados.
 - «Parques de Ciência» inclui pesquisa por nome e localização, filtros por serviços e preço, detalhes com os nove critérios e seleção para comparação descritiva. Os seis parques do catálogo são **fictícios** e identificados na interface. Sem SQL Server, os indicadores da dashboard refletem este mesmo catálogo; a ligação ao serviço real de parques ainda não existe.
-- A ação «Configurar critérios AHP» da dashboard e o botão da comparação preliminar abrem a configuração visual dos nove critérios AHP. As 36 comparações são guardadas apenas em memória durante a sessão. O avanço para a revisão exige todas as respostas; cálculo de pesos, consistência, classificação e criação de simulações continuam por implementar.
-- Os ecrãs principais de Simulações, Histórico e Definições continuam informativos. Autenticação, importação XML/XSD, custos, exportação e módulos adicionais ainda não estão implementados.
+- A configuração AHP compara dez critérios através de 45 comparações, calcula os pesos e verifica a consistência. Quando a matriz é consistente e existem pelo menos dois parques selecionados com dados completos, aplica esses pesos a uma soma ponderada de pontuações explicáveis — não compara os próprios parques par a par. Serviços disponíveis recebem 1/0; a cidade preferida recebe 1 em caso de correspondência exata; o preço mensal por m² é normalizado relativamente às alternativas selecionadas, sendo o mais baixo a pontuação máxima. Parques sem dados necessários ficam sem classificação. Preferências, ranking e resultados existem apenas em memória; gravação de simulações ainda não está implementada.
+- Histórico e Definições continuam informativos. O login usa credenciais fixas de demonstração e não é autenticação segura. Importação XML/XSD, custos operacionais, exportação e outros módulos ainda não estão implementados.
+- O website é estático: não cria contas e os instaladores ainda não estão disponíveis para transferência.
 
 ### Regras dos indicadores
 
@@ -41,7 +42,7 @@ dotnet run --project src/ParkWise.App/ParkWise.App.csproj
 
 Também é possível abrir `ParkWise.sln` no Visual Studio e definir `ParkWise.App` como projeto de arranque. O SDK e os pacotes NuGet são necessários para restaurar, compilar e testar. A conexão SQL Server é opcional nesta fase. A configuração de `DbContext` apenas regista o fornecedor quando `PARKWISE_SQLSERVER_CONNECTION` está definida; não executa migrações. Uma connection string definida seleciona a fonte EF Core; a dashboard requer então uma base de dados acessível e o esquema correspondente.
 
-Para validar a navegação no Windows, abrir a dashboard, escolher «Explorar parques», consultar os detalhes de um parque e voltar à pesquisa. Para validar a interface AHP, escolher «Configurar critérios AHP» na dashboard. Marcar «Igual importância» no primeiro par, avançar e voltar para verificar que a resposta e o progresso se mantêm. Escolher o critério da direita e uma intensidade entre 2 e 9 noutro par para verificar a comparação recíproca. O botão «Avançar para revisão» só fica ativo após as 36 respostas.
+Para validar a navegação no Windows, abrir a dashboard, escolher «Explorar parques», consultar os detalhes de um parque e voltar à pesquisa. Para validar o fluxo de decisão, selecionar pelo menos dois parques, escolher «Comparar selecionados», definir a cidade preferida, preencher as 45 comparações e rever os pesos, a consistência e o ranking. O ranking só é apresentado quando a matriz AHP é consistente; alternativas sem dados obrigatórios são listadas sem classificação. A comparação recíproca e o progresso podem ser verificados ao avançar e voltar entre perguntas.
 
 Em Linux, os testes das camadas Core e Application podem ser executados com `dotnet test tests/ParkWise.Tests/ParkWise.Tests.csproj` **se o SDK .NET 10 estiver instalado**. A aplicação WPF só pode ser executada em Windows; a compilação cruzada poderá depender da obtenção dos pacotes de targeting do Windows.
 
@@ -54,6 +55,7 @@ Em Linux, os testes das camadas Core e Application podem ser executados com `dot
 | `src/ParkWise.Application` | Contratos e serviço de cálculo da dashboard; pesquisa e seleção de parques |
 | `src/ParkWise.Infrastructure` | EF Core, SQL Server e fontes de dados reais ou de demonstração para a dashboard |
 | `tests/ParkWise.Tests` | Testes unitários dos critérios, dashboard, pesquisa, filtros e seleção |
+| `tests/ParkWise.App.Tests` | Testes Windows dos fluxos AHP e da apresentação do ranking |
 | `docs` | Notas de arquitetura e planeamento |
 | `database` | Futuras migrações e documentação da base de dados |
 
@@ -67,7 +69,7 @@ Cada responsável desenvolve na sua branch e propõe a integração na `main` po
 | --- | --- | --- |
 | **João** | `dev/admin` | Interface principal WPF, sidebar e navegação; dashboard e estatísticas; componentes visuais reutilizáveis; integração das interfaces dos outros módulos. |
 | **Francisco** | `dev/parques` | SQL Server e EF Core; registo, edição e pesquisa de Science Parks; armazenamento dos nove critérios; importação XML; serviços de acesso e consulta. |
-| **Melão** | `dev/ahp` | Método AHP; comparações dos nove critérios e cálculo dos pesos; consistência; avaliação e classificação dos parques; testes unitários. |
+| **Melão** | `dev/ahp` | Método AHP; comparações dos dez critérios e cálculo dos pesos; consistência; avaliação e classificação dos parques; testes unitários. |
 | **Guilherme** | `dev/simulacoes` | Criação e execução de simulações; necessidades da empresa; custos operacionais; integração com AHP; parâmetros das simulações. |
 | **Rodrigo** | `dev/auth` | Login e logout; utilizadores; armazenamento seguro de passwords; sessões, permissões e controlo de acesso. |
 | **Pinto** | `dev/resultados` | Ranking dos parques; gráficos e comparação; pontos fortes e fracos; exportação PDF/CSV; apresentação detalhada dos resultados. |
@@ -221,10 +223,12 @@ Para outra pessoa, usar a branch atribuída na tabela. Repetir este ciclo regula
 
 ## Próximos passos
 
-Implementar autenticação segura, gestão e importação de parques com XML/XSD, pesquisa, casos de utilização da simulação AHP, cálculo de custos e exportação. Rever o modelo de dados e criar migrações versionadas antes da primeira base de dados partilhada. Nenhuma migração deve ser aplicada sem confirmar o ambiente de destino.
+Implementar autenticação segura, gestão e importação de parques com XML/XSD, integração do AHP no ranking, gravação de simulações, cálculo de custos e exportação. Rever o modelo de dados e criar migrações versionadas antes da primeira base de dados partilhada. Nenhuma migração deve ser aplicada sem confirmar o ambiente de destino.
 
 
-## Login de teste
+## Credenciais do login de demonstração
+
+Estas credenciais estão fixas no código e servem apenas para demonstração; não usar como autenticação real.
 
 Email: teste@parkwise.pt
 password: ParkWise123!

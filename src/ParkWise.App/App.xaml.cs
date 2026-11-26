@@ -7,6 +7,7 @@ using ParkWise.Application.Dashboard;
 using ParkWise.Infrastructure;
 using ParkWise.Application.ScienceParks;
 using ParkWise.App.Demo;
+using ParkWise.Core.AHP;
 
 namespace ParkWise.App;
 
@@ -28,6 +29,8 @@ public partial class App : System.Windows.Application
         registrations.AddSingleton<ScienceParkSearchViewModel>();
         registrations.AddSingleton<ScienceParkDetailsViewModel>();
         registrations.AddSingleton<ScienceParkComparisonViewModel>();
+        registrations.AddSingleton<AhpCalculator>();
+        registrations.AddSingleton<ScienceParkRankingService>();
         registrations.AddSingleton<AhpCriteriaConfigurationViewModel>();
         registrations.AddParkWisePages();
         registrations.AddSingleton<MainWindowViewModel>();

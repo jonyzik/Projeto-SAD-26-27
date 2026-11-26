@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <a class="skip-link" href="#conteudo-principal">Saltar para o conteúdo</a>
+
+    <div class="announcement-bar">
+        <p>Projeto académico · Catálogo de demonstração · <a href="download.html">Ver disponibilidade</a></p>
+    </div>
 
     <header class="header">
         <nav class="navbar container" aria-label="Navegação principal">
@@ -30,14 +35,14 @@
                 <li><a href="#sobre">Sobre nós</a></li>
                 <li><a href="#servicos">Funcionalidades</a></li>
                 <li><a href="#d4sp">D4SP</a></li>
+                <li><a href="download.html">Aplicação</a></li>
                 <li><a href="#contactos" class="nav-contact">Contactos</a></li>
-                <li><a href="registar.html" class="nav-contact">Criar Conta</a></li>
             </ul>
 
         </nav>
     </header>
 
-    <main>
+    <main id="conteudo-principal" tabindex="-1">
 
         <!-- APRESENTAÇÃO -->
         <section class="hero" id="inicio">
@@ -53,43 +58,53 @@
 
                     <p>
                         O ParkWise apresenta o D4SP, uma solução de apoio à decisão
-                        que ajuda a analisar e comparar alternativas na seleção de
-                        parques de ciência e tecnologia.
+                        que permite pesquisar e comparar parques e analisar a
+                        importância dos critérios de seleção.
                     </p>
 
                     <div class="hero-buttons">
-                        <a href="#d4sp" class="btn btn-primary">
-                            Conhecer o D4SP
+                        <a href="#como-funciona" class="btn btn-primary">
+                            Ver demonstração
                         </a>
 
                         <a href="#servicos" class="btn btn-secondary">
-                            Ver funcionalidades
+                            Ver o que está disponível
+                        </a>
+
+                        <a href="download.html" class="btn btn-secondary">
+                            Disponibilidade da aplicação
                         </a>
                     </div>
                 </div>
 
-                <div class="hero-panel">
-                    <span class="panel-label">PARKWISE · D4SP</span>
-                    <h2>Seleção de parques</h2>
-                    <p>Uma análise estruturada de diferentes alternativas.</p>
-
-                    <div class="panel-item">
-                        <span>Pesquisa de parques</span>
-                        <strong>01</strong>
+                <div class="hero-panel" role="img"
+                     aria-label="Ilustração conceptual do mapa e dos critérios do ParkWise; os dados apresentados são de demonstração.">
+                    <div class="map-heading">
+                        <span class="panel-label">PARKWISE · D4SP</span>
+                        <span class="map-status"><span></span> MODO DEMONSTRAÇÃO</span>
                     </div>
 
-                    <div class="panel-item">
-                        <span>Comparação de critérios</span>
-                        <strong>02</strong>
-                    </div>
+                    <svg class="map-art" viewBox="0 0 680 500" aria-hidden="true">
+                        <rect width="680" height="500" fill="#e7eee1" />
+                        <path d="M-20 88 196 150l121-49 116 46 267-82M-28 358l170-65 118 42 143-112 288 79M78-15l63 174-31 133 69 227M393-26l-18 126 80 75-24 112 83 234M586-24l-62 137 42 106-26 109 81 193"
+                              fill="none" stroke="#c8d6c3" stroke-width="24" stroke-linecap="round" />
+                        <path d="M-20 88 196 150l121-49 116 46 267-82M-28 358l170-65 118 42 143-112 288 79M78-15l63 174-31 133 69 227M393-26l-18 126 80 75-24 112 83 234M586-24l-62 137 42 106-26 109 81 193"
+                              fill="none" stroke="#f8f8f1" stroke-width="14" stroke-linecap="round" />
+                        <path d="M30 245c108-96 182-90 261-9s140 95 226 27 114-80 177-65"
+                              fill="none" stroke="#376c4e" stroke-width="5" stroke-dasharray="3 13" stroke-linecap="round" />
+                        <path d="M42 28h120v66H42zM219 321h87v79h-87zM475 34h135v66H475zM512 324h111v77H512z"
+                              fill="#c4d6b7" opacity=".8" />
+                        <g fill="#234a35" stroke="#fff" stroke-width="7">
+                            <circle cx="156" cy="214" r="15" />
+                            <circle cx="337" cy="235" r="15" />
+                            <circle cx="524" cy="202" r="15" />
+                        </g>
+                        <circle cx="337" cy="235" r="32" fill="none" stroke="#376c4e" stroke-opacity=".24" stroke-width="12" />
+                    </svg>
 
-                    <div class="panel-item">
-                        <span>Simulação AHP</span>
-                        <strong>03</strong>
-                    </div>
-
-                    <div class="panel-note">
-                        Apoio a uma decisão fundamentada
+                    <div class="map-caption">
+                        <span class="map-pin" aria-hidden="true">⌖</span>
+                        <span><strong>Uma decisão, vários critérios.</strong><small>Ilustração conceptual · localização não real</small></span>
                     </div>
                 </div>
 
@@ -123,7 +138,7 @@
             <div class="container">
 
                 <div class="section-heading">
-                    <span class="section-tag">FUNCIONALIDADES</span>
+                    <span class="section-tag">FUNCIONALIDADES ATUAIS</span>
 
                     <h2>
                         O que permite
@@ -131,50 +146,135 @@
                     </h2>
 
                     <p>
-                        As principais funcionalidades previstas para apoiar
-                        o processo de seleção.
+                        O que já pode ser explorado na aplicação, incluindo
+                        as limitações atuais da demonstração.
                     </p>
                 </div>
 
                 <div class="features-grid">
 
                     <article class="feature-card">
+                        <div class="feature-art feature-art-map" aria-hidden="true">
+                            <span class="art-label">EXPLORAR</span>
+                            <span class="art-route"></span>
+                            <span class="art-pin art-pin-one"></span>
+                            <span class="art-pin art-pin-two"></span>
+                        </div>
                         <span class="feature-number">01</span>
-                        <h3>Gestão de parques</h3>
+                        <h3>Pesquisa e mapa</h3>
                         <p>
-                            Introduzir novos parques de ciência e importar
-                            informação sobre parques existentes.
+                            Pesquise e filtre o catálogo de demonstração.
+                            Os parques e as localizações apresentadas são fictícios
+                            ou aproximados.
                         </p>
                     </article>
 
                     <article class="feature-card">
+                        <div class="feature-art feature-art-compare" aria-hidden="true">
+                            <span class="art-pill">Parque A</span>
+                            <span class="art-compare-mark">↔</span>
+                            <span class="art-pill">Parque B</span>
+                        </div>
                         <span class="feature-number">02</span>
-                        <h3>Pesquisa</h3>
+                        <h3>Comparação descritiva</h3>
                         <p>
-                            Pesquisar e consultar os parques de ciência
-                            disponíveis na aplicação.
+                            Selecione parques do catálogo para consultar
+                            as diferenças descritas na aplicação.
                         </p>
                     </article>
 
                     <article class="feature-card">
+                        <div class="feature-art feature-art-ahp" aria-hidden="true">
+                            <span class="art-label">PESOS AHP</span>
+                            <span class="art-bar art-bar-one"></span>
+                            <span class="art-bar art-bar-two"></span>
+                            <span class="art-bar art-bar-three"></span>
+                        </div>
                         <span class="feature-number">03</span>
-                        <h3>Simulação AHP</h3>
+                        <h3>Configuração AHP</h3>
                         <p>
-                            Comparar alternativas através de critérios
-                            e aplicar o método de decisão AHP.
+                            Compare 10 critérios em 45 pares. Se as respostas forem consistentes,
+                            os pesos alimentam o ranking ponderado dos parques selecionados.
                         </p>
                     </article>
 
                     <article class="feature-card">
+                        <div class="feature-art feature-art-dashboard" aria-hidden="true">
+                            <span class="art-chart-bar"></span>
+                            <span class="art-chart-bar"></span>
+                            <span class="art-chart-bar"></span>
+                            <span class="art-chart-bar"></span>
+                            <span class="art-chart-line"></span>
+                        </div>
                         <span class="feature-number">04</span>
-                        <h3>Análise de resultados</h3>
+                        <h3>Dashboard</h3>
                         <p>
-                            Calcular custos operacionais, identificar
-                            pontos fortes e fracos e exportar resultados.
+                            Consulte indicadores e gráficos do catálogo.
+                            Com os dados atuais, os parques são de demonstração.
                         </p>
                     </article>
 
                 </div>
+            </div>
+        </section>
+
+        <!-- FLUXO DE DEMONSTRAÇÃO -->
+        <section class="section workflow" id="como-funciona">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-tag">DEMONSTRAÇÃO</span>
+                    <h2>Um fluxo claro, <span class="highlight">sem prometer resultados que ainda não existem.</span></h2>
+                    <p>
+                        Explore o catálogo apresentado em demonstração e veja como a configuração
+                        AHP transforma preferências em pesos e os combina com as pontuações dos parques.
+                    </p>
+                </div>
+
+                <div class="workflow-grid">
+                    <article class="workflow-step">
+                        <span class="feature-number">01</span>
+                        <h3>Explore os parques</h3>
+                        <p>Pesquise, aplique filtros e selecione pelo menos dois parques; o mapa usa localizações aproximadas.</p>
+                        <span class="status-label">Dados de demonstração</span>
+                    </article>
+                    <article class="workflow-step">
+                        <span class="feature-number">02</span>
+                        <h3>Defina as preferências</h3>
+                        <p>Escolha a cidade preferida e indique a importância relativa dos 10 critérios AHP.</p>
+                        <span class="status-label">45 comparações</span>
+                    </article>
+                    <article class="workflow-step">
+                        <span class="feature-number">03</span>
+                        <h3>Veja o ranking</h3>
+                        <p>Consulte os pesos, a consistência e a pontuação ponderada explicada de cada parque elegível.</p>
+                        <span class="status-label">Só com matriz consistente</span>
+                    </article>
+                </div>
+
+                <aside class="ahp-example" aria-labelledby="example-title">
+                    <div class="example-copy">
+                        <span class="section-tag">EXEMPLO DIDÁTICO</span>
+                        <h3 id="example-title">E se todos os critérios tivessem a mesma importância?</h3>
+                        <p>
+                            Com as 45 respostas em “igual importância”, cada um dos 10 critérios
+                            recebe um peso de 10% e o rácio de consistência é 0%.
+                        </p>
+                        <p class="example-note">
+                            É um exemplo explicativo, não uma captura de ecrã nem uma simulação guardada.
+                        </p>
+                    </div>
+                    <div class="example-result" role="group" aria-label="Resultado do exemplo de preferências iguais">
+                        <div class="example-metric">
+                            <span>Peso de cada critério</span>
+                            <strong>10%</strong>
+                        </div>
+                        <div class="example-metric">
+                            <span>Rácio de consistência</span>
+                            <strong>0%</strong>
+                        </div>
+                        <div class="example-caption">10 critérios · 45 comparações</div>
+                    </div>
+                </aside>
             </div>
         </section>
 
@@ -190,20 +290,18 @@
                     </h2>
 
                     <p>
-                        O D4SP apoia a avaliação de diferentes parques
-                        de ciência e tecnologia. Através do método AHP,
-                        permite estruturar critérios e comparar
-                        alternativas de forma organizada.
+                        Na versão atual, o módulo AHP compara os 10 critérios
+                        em 45 pares, calcula pesos e consistência e, quando
+                        a matriz é consistente, aplica os pesos numa soma ponderada
+                        para classificar os parques selecionados. Serviços, cidade
+                        preferida e preço mensal por m² têm pontuações explícitas; alternativas com
+                        dados incompletos não são classificadas. É uma soma ponderada,
+                        não uma comparação AHP par a par entre parques. As simulações
+                        e os rankings ainda não ficam guardados.
                     </p>
 
-                    <p>
-                        O objetivo é disponibilizar informação clara
-                        para apoiar o utilizador durante o processo
-                        de seleção.
-                    </p>
-
-                    <a href="#contactos" class="text-link">
-                        Saber mais sobre o projeto →
+                    <a href="#como-funciona" class="text-link">
+                        Ver um exemplo do cálculo →
                     </a>
                 </div>
 
@@ -215,31 +313,32 @@
                     <h3>Analytic Hierarchy Process</h3>
 
                     <p>
-                        O método AHP ajuda a organizar critérios
-                        e a comparar alternativas.
+                        O AHP calcula a importância relativa dos critérios.
+                        Esses pesos são aplicados às pontuações dos parques numa
+                        soma ponderada — não há comparações AHP par a par entre parques.
                     </p>
 
                     <div class="method-step">
                         <span>1</span>
                         <div>
                             <strong>Definir critérios</strong>
-                            <small>Identificar os fatores de avaliação</small>
+                            <small>Considerar os 10 fatores de avaliação</small>
                         </div>
                     </div>
 
                     <div class="method-step">
                         <span>2</span>
                         <div>
-                            <strong>Comparar alternativas</strong>
-                            <small>Avaliar os parques considerados</small>
+                            <strong>Comparar critérios</strong>
+                            <small>Responder às 45 comparações par a par</small>
                         </div>
                     </div>
 
                     <div class="method-step">
                         <span>3</span>
                         <div>
-                            <strong>Analisar resultados</strong>
-                            <small>Apoiar a seleção final</small>
+                            <strong>Rever o ranking</strong>
+                            <small>Consultar pontuações e contribuições por critério</small>
                         </div>
                     </div>
                 </div>
@@ -251,17 +350,25 @@
         <section class="section contact" id="contactos">
             <div class="container contact-content">
 
-                <span class="section-tag">PARKWISE</span>
+                <span class="section-tag">CÓDIGO E CONTACTO</span>
 
                 <h2>
-                    Decisões mais claras,
-                    <span class="highlight">com apoio da tecnologia.</span>
+                    Consulte o projeto
+                    <span class="highlight">ou reporte uma questão.</span>
                 </h2>
 
                 <p>
-                    Um projeto académico desenvolvido no âmbito da unidade
-                    curricular de Sistemas de Apoio à Decisão.
+                    Projeto académico desenvolvido no âmbito da unidade curricular
+                    de Sistemas de Apoio à Decisão. O código e os canais de contacto
+                    do projeto estão no GitHub.
                 </p>
+
+                <div class="contact-actions">
+                    <a class="btn btn-primary" href="https://github.com/jonyzik/Projeto-SAD-26-27"
+                       target="_blank" rel="noopener noreferrer">Ver repositório</a>
+                    <a class="btn btn-secondary" href="https://github.com/jonyzik/Projeto-SAD-26-27/issues"
+                       target="_blank" rel="noopener noreferrer">Reportar uma questão</a>
+                </div>
 
             </div>
         </section>

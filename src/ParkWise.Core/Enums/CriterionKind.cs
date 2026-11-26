@@ -10,5 +10,6 @@ public enum CriterionKind
     CanteenOrRestaurant = 6,
     LeisureArea = 7,
     AirConditioning = 8,
-    CompetitiveRentPerSquareMetre = 9
+    CompetitiveRentPerSquareMetre = 9,
+    GeographicLocation = 10
 }

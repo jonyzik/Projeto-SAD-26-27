@@ -27,28 +27,29 @@
                 </StackPanel>
             </Border>
 
-            <Border Style="{StaticResource CardStyle}" Margin="0,18,0,0">
-                <StackPanel>
-                    <TextBlock Text="Os nove critérios obrigatórios" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,6" />
-                    <TextBlock Text="O preço é apresentado como valor mensal; a sua competitividade será avaliada na futura simulação."
-                               Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,0,0,18" />
-                    <ItemsControl ItemsSource="{Binding Criteria}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="2*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,12,0" />
-                                    <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource AccentBrush}"
-                                               TextWrapping="Wrap" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+            <Expander Header="Ver critérios de avaliação" Margin="0,14,0,0">
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Os serviços apresentados são ilustrativos."
+                                   Foreground="{StaticResource MutedBrush}" Margin="0,0,0,12" />
+                        <ItemsControl ItemsSource="{Binding Criteria}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource AccentBrush}"
+                                                   TextWrapping="Wrap" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Expander>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
