@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using ParkWise.App.ViewModels;
+using ParkWise.Application.Simulations;
 
 namespace ParkWise.App.Navigation;
 
@@ -7,6 +8,8 @@ public static class PageRegistration
 {
     public static IServiceCollection AddParkWisePages(this IServiceCollection services)
     {
+        services.AddSingleton<SimulationSession>();
+
         services.AddSingleton<IPageRoute>(provider => new PageRoute(
             PageKeys.Dashboard,
             "Dashboard",
@@ -47,16 +50,22 @@ public static class PageRegistration
             IsVisibleInSidebar: false,
             ParentMenuKey: PageKeys.ScienceParks));
 
-        services.AddSingleton<IPageRoute>(_ => new PageRoute(
+        services.AddSingleton<IPageRoute>(provider => new PageRoute(
             PageKeys.Simulations,
             "Simulações",
             "Simulações",
-            "Compare alternativas com as preferências da sua empresa.",
+            "Crie, execute e consulte simulações com as preferências da sua empresa.",
             "\uE7C3",
-            () => new PlaceholderViewModel(
-                "Simulações",
-                "A criação e o cálculo de simulações pelo método AHP estão em desenvolvimento.",
-                ["Definição de preferências", "Comparações pelos nove critérios", "Resultados e custos operacionais"])));
+            () =>
+            {
+                var viewModel = new SimulationsViewModel(
+                    provider.GetRequiredService<ISimulationService>(),
+                    provider.GetRequiredService<SimulationSession>(),
+                    key => Navigate(provider, key),
+                    Dialogs.Confirm);
+                viewModel.LoadCommand.Execute(null);
+                return viewModel;
+            }));
 
         services.AddSingleton<IPageRoute>(_ => new PageRoute(
             PageKeys.History,
@@ -82,11 +91,19 @@ public static class PageRegistration
 
         services.AddSingleton<IPageRoute>(provider => new PageRoute(
             PageKeys.NewSimulation,
-            "Configurar critérios AHP",
-            "Configurar critérios AHP",
-            "Defina a importância relativa dos nove critérios obrigatórios.",
+            "Nova simulação",
+            "Nova simulação",
+            "Defina as necessidades da empresa, compare os critérios pelo método AHP e calcule os custos operacionais.",
             "\uE7C3",
-            () => provider.GetRequiredService<AhpCriteriaConfigurationViewModel>(),
+            () =>
+            {
+                var viewModel = new NewSimulationViewModel(
+                    provider.GetRequiredService<ISimulationService>(),
+                    provider.GetRequiredService<SimulationSession>(),
+                    key => Navigate(provider, key));
+                viewModel.InitializeCommand.Execute(null);
+                return viewModel;
+            },
             IsVisibleInSidebar: false,
             ParentMenuKey: PageKeys.Simulations));
 
@@ -101,4 +118,8 @@ public static class PageRegistration
 
         return services;
     }
+
+    // Resolvido apenas no momento da navegação, para evitar dependências circulares com a MainWindowViewModel.
+    private static void Navigate(IServiceProvider provider, string key) =>
+        provider.GetRequiredService<MainWindowViewModel>().NavigateCommand.Execute(key);
 }
