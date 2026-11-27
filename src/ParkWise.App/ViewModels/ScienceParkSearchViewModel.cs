@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Input;
 using ParkWise.App.Navigation;
@@ -37,7 +38,13 @@ public sealed class ScienceParkSearchViewModel : ViewModelBase
             .Where(criterion => criterion.Kind != CriterionKind.CompetitiveRentPerSquareMetre)
             .Select(criterion => new ServiceFilterViewModel(criterion.Kind, criterion.Name, ApplyFilters))
             .ToArray();
-        RefreshCommand = new AsyncRelayCommand(LoadAsync);
+        RefreshCommand = new AsyncRelayCommand(LoadAsync, exception =>
+        {
+            Trace.TraceError($"Science park refresh command failed: {exception}");
+            _allParks = [];
+            Results = [];
+            StatusMessage = "Falha ao carregar parques. Atualize para tentar de novo.";
+        });
         ClearFiltersCommand = new RelayCommand(_ => ClearFilters());
         ShowDetailsCommand = new RelayCommand(parameter => ShowDetails(parameter as ScienceParkCardViewModel));
         OpenComparisonCommand = new RelayCommand(_ => _navigation.NavigateTo(PageKeys.ScienceParkComparison));
@@ -95,14 +102,23 @@ public sealed class ScienceParkSearchViewModel : ViewModelBase
             {
                 OnPropertyChanged(nameof(ResultCountText));
                 OnPropertyChanged(nameof(HasNoResults));
+                OnPropertyChanged(nameof(MapPoints));
             }
         }
     }
 
-    public string ResultCountText => $"{Results.Count} parque(s) encontrado(s)";
-    public string SelectedCountText => $"{_selection.Count} parque(s) selecionado(s)";
+    public string ResultCountText => $"{Results.Count} encontrados";
+    public string SelectedCountText => $"{_selection.Count} para comparar";
     public bool HasNoResults => Results.Count == 0;
-
+    public IReadOnlyList<ScienceParkMapPoint> MapPoints => Results
+        .Select(result => (Result: result, Coordinates: result.Park.Coordinates))
+        .Where(item => item.Coordinates?.IsValid == true)
+        .Select(item => new ScienceParkMapPoint(
+            item.Result.Name,
+            item.Result.City,
+            item.Coordinates!.Latitude,
+            item.Coordinates.Longitude))
+        .ToArray();
     public async Task LoadAsync()
     {
         StatusMessage = "A carregar parques...";
@@ -111,17 +127,24 @@ public sealed class ScienceParkSearchViewModel : ViewModelBase
             var data = await _catalog.LoadAsync();
             _allParks = data.Parks;
             StatusMessage = data.IsDemonstration
-                ? "DEMONSTRAÇÃO · Os parques, serviços e preços desta página são fictícios."
-                : "Dados do catálogo de parques.";
+                ? "Demonstração · dados fictícios"
+                : "Dados do catálogo";
             ApplyFilters();
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            Trace.TraceError($"Failed to load science parks: {exception}");
             _allParks = [];
             Results = [];
-            StatusMessage = "Não foi possível carregar os parques. Tente atualizar.";
+            StatusMessage = "Falha ao carregar parques. Atualize para tentar de novo.";
         }
     }
+
+    public sealed record ScienceParkMapPoint(
+        string Name,
+        string City,
+        double Latitude,
+        double Longitude);
 
     private void ApplyFilters()
     {

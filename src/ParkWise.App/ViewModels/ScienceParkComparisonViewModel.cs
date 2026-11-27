@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Input;
 using ParkWise.App.Navigation;
 using ParkWise.Application.ScienceParks;
@@ -63,13 +64,14 @@ public sealed class ScienceParkComparisonViewModel : ViewModelBase
                 .Select(id => new ScienceParkCardViewModel(byId[id], _selection))
                 .ToArray();
             StatusMessage = data.IsDemonstration
-                ? "DEMONSTRAÇÃO · Comparação descritiva de parques e preços fictícios. Sem pontuação ou AHP."
-                : "Comparação descritiva, sem pontuação ou AHP.";
+                ? "Demonstração · configure as preferências AHP para classificar os parques selecionados."
+                : "Configure as preferências AHP para classificar os parques selecionados.";
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            Trace.TraceError($"Failed to load science park comparison: {exception}");
             Parks = [];
-            StatusMessage = "Não foi possível carregar os parques selecionados. Tente voltar à pesquisa.";
+            StatusMessage = "Falha ao carregar a comparação.";
         }
     }
 }

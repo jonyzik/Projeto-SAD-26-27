@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="">
+    <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            background: #eef2ea;
+            font: 13px "Segoe UI", Arial, sans-serif;
+        }
+
+        #notice {
+            position: absolute;
+            z-index: 1000;
+            top: 14px;
+            left: 50%;
+            display: none;
+            max-width: calc(100% - 40px);
+            padding: 10px 14px;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #35473c;
+            border: 1px solid #dfe7de;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(24, 52, 39, .13);
+        }
+
+        .park-popup strong,
+        .park-popup span {
+            display: block;
+        }
+
+        .park-popup span {
+            margin-top: 3px;
+            color: #68796f;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="notice" role="status">A carregar mapa e cartografia…</div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script>
+        (() => {
+            let map;
+            let tileLayer;
+            let markers = [];
+            let locations = [];
+
+            const notice = document.getElementById("notice");
+            const showNotice = (message) => {
+                notice.textContent = message;
+                notice.style.display = "block";
+            };
+            const hideNotice = () => {
+                notice.style.display = "none";
+            };
+
+            const renderMarkers = () => {
+                markers.forEach((marker) => marker.remove());
+                markers = [];
+
+                if (!locations.length) {
+                    showNotice("Não há parques com coordenadas nos resultados atuais.");
+                    return;
+                }
+
+                const bounds = [];
+                locations.forEach((location) => {
+                    const latitude = Number(location.latitude);
+                    const longitude = Number(location.longitude);
+                    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+                        return;
+                    }
+
+                    const marker = L.marker([latitude, longitude], {
+                        title: location.name,
+                        alt: location.name
+                    }).addTo(map);
+
+                    const popup = document.createElement("div");
+                    popup.className = "park-popup";
+                    const name = document.createElement("strong");
+                    const city = document.createElement("span");
+                    name.textContent = location.name;
+                    city.textContent = location.city;
+                    popup.append(name, city);
+                    marker.bindPopup(popup);
+
+                    markers.push(marker);
+                    bounds.push([latitude, longitude]);
+                });
+
+                if (bounds.length === 1) {
+                    map.setView(bounds[0], 12);
+                } else if (bounds.length > 1) {
+                    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+                }
+            };
+
+            window.parkwiseMap = {
+                initialize(initialLocations) {
+                    locations = initialLocations;
+                    if (!window.L) {
+                        showNotice("Não foi possível carregar Leaflet. Verifique a ligação à internet.");
+                        return false;
+                    }
+
+                    if (!map) {
+                        map = L.map("map", {
+                            scrollWheelZoom: true,
+                            zoomControl: true
+                        }).setView([39.5, -8.0], 6);
+
+                        tileLayer = L.tileLayer(
+                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            {
+                                maxZoom: 19,
+                                attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>"
+                            }
+                        ).addTo(map);
+
+                        tileLayer.on("load", hideNotice);
+                        tileLayer.on("tileerror", () => showNotice(
+                            "Não foi possível carregar alguns mosaicos do mapa."
+                        ));
+                    }
+
+                    renderMarkers();
+                    return true;
+                },
+
+                setLocations(nextLocations) {
+                    locations = nextLocations;
+                    if (map) {
+                        renderMarkers();
+                    }
+                    return Boolean(map);
+                }
+            };
+        })();
+    </script>
+</body>
+</html>

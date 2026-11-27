@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ParkWise.Application.AhpConfiguration;
-using ParkWise.Core;
+using ParkWise.Core.AHP;
 using ParkWise.Core.Enums;
 
 namespace ParkWise.Tests;
@@ -9,16 +9,16 @@ namespace ParkWise.Tests;
 public sealed class AhpComparisonSessionTests
 {
     [TestMethod]
-    public void CreatesThirtySixUniquePairsFromSharedRequiredCriteria()
+    public void CreatesFortyFiveUniquePairsFromSharedRequiredCriteria()
     {
         var session = CreateSession();
 
-        Assert.AreEqual(36, session.Questions.Count);
-        Assert.AreEqual(36, session.Questions.Select(pair => (pair.LeftKind, pair.RightKind)).Distinct().Count());
-        Assert.AreEqual(EvaluationCriteria.Required[0].Name, session.CurrentQuestion.LeftName);
-        Assert.AreEqual(EvaluationCriteria.Required[1].Name, session.CurrentQuestion.RightName);
+        Assert.AreEqual(45, session.Questions.Count);
+        Assert.AreEqual(45, session.Questions.Select(pair => (pair.LeftKind, pair.RightKind)).Distinct().Count());
+        Assert.AreEqual(AHPCriteria.Required[0].Name, session.CurrentQuestion.LeftName);
+        Assert.AreEqual(AHPCriteria.Required[1].Name, session.CurrentQuestion.RightName);
         CollectionAssert.AreEquivalent(
-            EvaluationCriteria.Required.Select(criterion => criterion.Kind).ToArray(),
+            AHPCriteria.Required.Select(criterion => criterion.Kind).ToArray(),
             session.Questions.SelectMany(pair => new[] { pair.LeftKind, pair.RightKind }).Distinct().ToArray());
     }
 
@@ -71,13 +71,13 @@ public sealed class AhpComparisonSessionTests
     public void BlocksExportUntilAllComparisonsAreComplete()
     {
         var session = CreateSession();
-        for (var index = 0; index < 35; index++)
+        for (var index = 0; index < 44; index++)
         {
             session.SelectDirection(AhpPreferenceDirection.Equal);
             session.MoveNext();
         }
 
-        Assert.AreEqual(35, session.AnsweredCount);
+        Assert.AreEqual(44, session.AnsweredCount);
         Assert.IsFalse(session.CanAdvance);
         Assert.Throws<InvalidOperationException>(() => session.ExportCompletedResponses());
 
@@ -85,7 +85,7 @@ public sealed class AhpComparisonSessionTests
         session.SelectIntensity(3);
         Assert.IsTrue(session.CanAdvance);
         var responses = session.ExportCompletedResponses();
-        Assert.AreEqual(36, responses.Count);
+        Assert.AreEqual(45, responses.Count);
         Assert.AreEqual(AhpPreferenceDirection.Right, responses[^1].Direction);
         Assert.AreEqual(3, responses[^1].Intensity);
         Assert.AreEqual(session.Questions[^1].LeftKind, responses[^1].LeftCriterion);
@@ -108,17 +108,32 @@ public sealed class AhpComparisonSessionTests
         session.ClearCurrent();
         Assert.AreEqual(1, session.AnsweredCount);
         Assert.IsFalse(session.CurrentDraft.IsComplete);
-        Assert.Throws<ArgumentOutOfRangeException>(() => session.GoTo(36));
+        Assert.Throws<ArgumentOutOfRangeException>(() => session.GoTo(45));
     }
 
     [TestMethod]
     public void RejectsCriteriaThatDoNotMatchSharedContract()
     {
-        var criteria = EvaluationCriteria.Required.ToArray();
+        var criteria = AHPCriteria.Required.ToArray();
         criteria[0] = ((CriterionKind)99, "Outro critério");
 
         Assert.Throws<ArgumentException>(() => new AhpComparisonSession(criteria));
     }
 
-    private static AhpComparisonSession CreateSession() => new(EvaluationCriteria.Required);
+    [TestMethod]
+    public void SetAllEqualAndResetMakeTheSessionSimpleToUse()
+    {
+        var session = CreateSession();
+
+        session.SetAllEqual();
+        Assert.AreEqual(session.Questions.Count, session.AnsweredCount);
+        Assert.IsTrue(session.CanAdvance);
+
+        session.Reset();
+        Assert.AreEqual(0, session.AnsweredCount);
+        Assert.AreEqual(0, session.CurrentIndex);
+        Assert.IsFalse(session.CanAdvance);
+    }
+
+    private static AhpComparisonSession CreateSession() => new(AHPCriteria.Required);
 }

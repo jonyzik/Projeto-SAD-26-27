@@ -16,8 +16,6 @@
             </DockPanel>
 
             <TextBlock Text="{Binding CountText}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,8" />
-            <TextBlock Text="Selecione pelo menos dois parques para avançar para a futura simulação."
-                       Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,0,0,18" />
 
             <TextBlock Text="Ainda não selecionou parques. Volte à pesquisa para escolher alternativas."
                        Foreground="{StaticResource MutedBrush}" Margin="0,0,0,18" TextWrapping="Wrap">
@@ -43,18 +41,25 @@
                             <StackPanel>
                                 <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" />
                                 <TextBlock Text="{Binding City}" Foreground="{StaticResource AccentBrush}" Margin="0,6,0,0" />
-                                <TextBlock Text="{Binding PriceText}" FontWeight="SemiBold" Margin="0,14,0,18" TextWrapping="Wrap" />
-                                <ItemsControl ItemsSource="{Binding Criteria}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Margin="0,0,0,12">
-                                                <TextBlock Text="{Binding Name}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
-                                                <TextBlock Text="{Binding Value}" Foreground="{StaticResource TextBrush}"
-                                                           Margin="0,3,0,0" TextWrapping="Wrap" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                <TextBlock Text="{Binding PriceText}" FontWeight="SemiBold" Margin="0,12,0,12" TextWrapping="Wrap" />
+                                <Expander Header="Ver critérios">
+                                    <ItemsControl ItemsSource="{Binding Criteria}" Margin="0,8,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,0,0,8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Name}" Foreground="{StaticResource MutedBrush}"
+                                                               TextWrapping="Wrap" Margin="0,0,8,0" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                               Foreground="{StaticResource TextBrush}" TextWrapping="Wrap" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Expander>
                             </StackPanel>
                         </Border>
                     </DataTemplate>

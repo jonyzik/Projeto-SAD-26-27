@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Input;
 using ParkWise.App.Navigation;
 using ParkWise.Application.ScienceParks;
@@ -84,14 +85,15 @@ public sealed class ScienceParkDetailsViewModel : ViewModelBase
             var data = await _catalog.LoadAsync();
             Park = data.Parks.FirstOrDefault(park => park.Id == id);
             StatusMessage = Park is null
-                ? "O parque selecionado já não está disponível no catálogo."
+                ? "Parque indisponível no catálogo."
                 : data.IsDemonstration
-                    ? "DEMONSTRAÇÃO · Dados fictícios. A disponibilidade dos serviços é apenas ilustrativa."
-                    : "Dados do catálogo de parques.";
+                    ? "Demonstração · dados ilustrativos"
+                    : "Dados do catálogo";
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            StatusMessage = "Não foi possível consultar este parque. Tente novamente.";
+            Trace.TraceError($"Failed to load science park details: {exception}");
+            StatusMessage = "Falha ao carregar este parque.";
         }
     }
 }

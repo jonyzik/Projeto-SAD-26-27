@@ -14,7 +14,7 @@ public static class PageRegistration
             PageKeys.Dashboard,
             "Dashboard",
             "Dashboard",
-            "Apoio à escolha do parque de ciência mais adequado para a sua empresa.",
+            "Resumo e atalhos.",
             "\uE80F",
             () => provider.GetRequiredService<DashboardViewModel>(),
             () => provider.GetRequiredService<DashboardViewModel>().RefreshCommand.Execute(null)));
@@ -22,8 +22,8 @@ public static class PageRegistration
         services.AddSingleton<IPageRoute>(provider => new PageRoute(
             PageKeys.ScienceParks,
             "Parques de Ciência",
-            "Parques de Ciência e Tecnologia",
-            "Explore alternativas para a instalação da sua empresa.",
+            "Pesquisar parques",
+            "Procure por nome ou localização.",
             "\uE80D",
             () => provider.GetRequiredService<ScienceParkSearchViewModel>(),
             () => provider.GetRequiredService<ScienceParkSearchViewModel>().RefreshCommand.Execute(null)));
@@ -32,7 +32,7 @@ public static class PageRegistration
             PageKeys.ScienceParkDetails,
             "Detalhes do parque",
             "Detalhes do parque",
-            "Consulte os nove critérios obrigatórios e selecione o parque para comparar.",
+            "Informação principal e critérios.",
             "\uE80D",
             () => provider.GetRequiredService<ScienceParkDetailsViewModel>(),
             () => _ = provider.GetRequiredService<ScienceParkDetailsViewModel>().LoadAsync(),
@@ -43,7 +43,7 @@ public static class PageRegistration
             PageKeys.ScienceParkComparison,
             "Comparação preliminar",
             "Comparação preliminar",
-            "Veja os parques selecionados lado a lado antes da futura simulação AHP.",
+            "Reveja as alternativas escolhidas.",
             "\uE80D",
             () => provider.GetRequiredService<ScienceParkComparisonViewModel>(),
             () => _ = provider.GetRequiredService<ScienceParkComparisonViewModel>().LoadAsync(),
@@ -71,7 +71,7 @@ public static class PageRegistration
             PageKeys.History,
             "Histórico",
             "Histórico",
-            "Reveja as análises realizadas quando este módulo estiver disponível.",
+            "Análises anteriores.",
             "\uE81C",
             () => new PlaceholderViewModel(
                 "Histórico de simulações",
@@ -82,7 +82,7 @@ public static class PageRegistration
             PageKeys.Settings,
             "Definições",
             "Definições",
-            "Configure a aplicação e as suas preferências.",
+            "Preferências da aplicação.",
             "\uE713",
             () => new PlaceholderViewModel(
                 "Definições",
@@ -111,7 +111,7 @@ public static class PageRegistration
             PageKeys.Login,
             "Login",
             "Iniciar sessão",
-            "Aceda à sua conta ParkWise",
+            "Aceda à sua conta.",
             "\uE77B",
             () => provider.GetRequiredService<LoginViewModel>(),
             IsVisibleInSidebar: false));

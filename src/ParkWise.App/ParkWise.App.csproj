@@ -7,6 +7,8 @@
     <EnableDefaultApplicationDefinition>true</EnableDefaultApplicationDefinition>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="Maps\OpenStreetMap.html" CopyToOutputDirectory="PreserveNewest" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4370.26" />
     <ProjectReference Include="..\ParkWise.Application\ParkWise.Application.csproj" />
     <ProjectReference Include="..\ParkWise.Infrastructure\ParkWise.Infrastructure.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.15" />

@@ -41,7 +41,11 @@ public sealed class NewSimulationViewModel : ViewModelBase
         foreach (var (kind, name) in EvaluationCriteria.Required)
             Criteria.Add(new CriterionPreferenceViewModel(kind, name, RecalculateWeights));
 
-        InitializeCommand = new AsyncRelayCommand(InitializeAsync);
+        InitializeCommand = new AsyncRelayCommand(InitializeAsync, exception =>
+        {
+            System.Diagnostics.Trace.TraceError($"New simulation initialization failed: {exception}");
+            StatusMessage = "Não foi possível carregar a página. Verifique a ligação.";
+        });
         RunCommand = new AsyncParameterCommand(_ => RunAsync(), _ => _isLoaded);
         SaveCommand = new AsyncParameterCommand(_ => SaveAsync(), _ => CanSave);
         SelectAllParksCommand = new RelayCommand(_ => SetAllParks(true));

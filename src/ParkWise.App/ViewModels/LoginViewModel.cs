@@ -8,7 +8,6 @@ public sealed class LoginViewModel : ViewModelBase
     private string _email = string.Empty;
     private string _password = string.Empty;
     private string _errorMessage = string.Empty;
-    private string _username = string.Empty;
 
     public LoginViewModel()
     {
@@ -21,12 +20,6 @@ public sealed class LoginViewModel : ViewModelBase
     {
         get => _email;
         set => SetProperty(ref _email, value);
-    }
-
-    public string username
-    {
-        get => _username;
-        set => SetProperty(ref _username, value);
     }
 
     public string Password
@@ -48,7 +41,6 @@ public sealed class LoginViewModel : ViewModelBase
         ErrorMessage = string.Empty;
 
         if (string.IsNullOrWhiteSpace(Email) ||
-            string.IsNullOrWhiteSpace(username) ||
             string.IsNullOrWhiteSpace(Password))
         {
             ErrorMessage = "Preenche o email e a palavra-passe.";
@@ -71,6 +63,7 @@ public sealed class LoginViewModel : ViewModelBase
             return;
         }
 
+        Password = string.Empty;
         LoginSucceeded?.Invoke();
     }
 }
