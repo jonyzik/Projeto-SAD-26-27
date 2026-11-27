@@ -23,7 +23,11 @@ public sealed class SimulationsViewModel : ViewModelBase
         _session = session;
         _navigate = navigate;
         _confirm = confirm;
-        LoadCommand = new AsyncRelayCommand(LoadAsync);
+        LoadCommand = new AsyncRelayCommand(LoadAsync, exception =>
+        {
+            System.Diagnostics.Trace.TraceError($"Simulations load failed: {exception}");
+            StatusMessage = "Não foi possível carregar as simulações. Verifique a ligação à base de dados e tente atualizar.";
+        });
         NewCommand = new RelayCommand(_ =>
         {
             _session.Clear();
