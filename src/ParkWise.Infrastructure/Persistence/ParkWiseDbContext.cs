@@ -65,9 +65,20 @@ public sealed class ParkWiseDbContext(DbContextOptions<ParkWiseDbContext> option
         {
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Name).HasMaxLength(200).IsRequired();
-            entity.Property(x => x.RequiredAreaSquareMetres).HasPrecision(12, 2);
+            entity.Property(x => x.Description).HasMaxLength(1000);
+            entity.Property(x => x.ConsistencyRatio).HasPrecision(9, 6);
+            entity.HasIndex(x => x.CreatedAtUtc);
+            // Utilizador opcional até à integração do módulo de autenticação.
             entity.HasOne(x => x.User).WithMany(x => x.Simulations)
-                .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(x => x.UserId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
+
+            // Área e duração do contrato ficam em colunas da própria tabela Simulations.
+            entity.OwnsOne(x => x.Requirements, owned =>
+            {
+                owned.Property(p => p.RequiredAreaSquareMetres).HasColumnName("RequiredAreaSquareMetres").HasPrecision(12, 2);
+                owned.Property(p => p.ContractDurationMonths).HasColumnName("ContractDurationMonths");
+            });
+            entity.Navigation(x => x.Requirements).IsRequired();
         });
 
         modelBuilder.Entity<SimulationCriterionWeight>(entity =>
@@ -93,6 +104,8 @@ public sealed class ParkWiseDbContext(DbContextOptions<ParkWiseDbContext> option
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Score).HasPrecision(12, 8);
             entity.Property(x => x.EstimatedMonthlyCost).HasPrecision(14, 2);
+            entity.Property(x => x.EstimatedContractCost).HasPrecision(16, 2);
+            entity.Property(x => x.ExclusionReason).HasMaxLength(2000);
             entity.Property(x => x.Strengths).HasMaxLength(2000);
             entity.Property(x => x.Weaknesses).HasMaxLength(2000);
             entity.HasIndex(x => new { x.SimulationId, x.TechnologyParkId }).IsUnique();

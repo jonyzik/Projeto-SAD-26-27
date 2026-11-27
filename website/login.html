@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acesso à plataforma ParkWise.">
+    <title>Login | ParkWise</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="login-page">
+
+    <header class="header">
+        <nav class="navbar container">
+
+            <a href="index.html" class="logo">
+                <span class="logo-icon">P</span>
+                <span>Park<span class="logo-highlight">Wise</span></span>
+            </a>
+
+            <a href="index.html" class="login-back">
+                ← Voltar ao início
+            </a>
+
+        </nav>
+    </header>
+
+    <main class="login-main">
+
+        <section class="login-card">
+
+            <span class="section-tag">ÁREA RESERVADA</span>
+
+            <h1>Bem-vindo ao ParkWise.</h1>
+
+            <p class="login-description">
+                Inicia sessão para entrares na tua área de trabalho
+                e começares a analisar parques de ciência e tecnologia.
+            </p>
+
+            <form id="login-form">
+
+                <div class="login-field">
+                    <label for="email">Email</label>
+
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="nome@exemplo.pt"
+                        autocomplete="username"
+                        required>
+                </div>
+
+                <div class="login-field">
+                    <label for="password">Palavra-passe</label>
+
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="Introduz a tua palavra-passe"
+                        autocomplete="current-password"
+                        required>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-submit">
+                    Entrar
+                </button>
+
+                <p id="login-message" class="login-message"
+                   role="status" aria-live="polite"></p>
+
+            </form>
+
+            <p class="login-footnote">
+                Acesso destinado a utilizadores autorizados.
+            </p>
+
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+
+            <a href="index.html" class="logo">
+                <span class="logo-icon">P</span>
+                <span>Park<span class="logo-highlight">Wise</span></span>
+            </a>
+
+            <p>
+                © <span id="current-year"></span>
+                ParkWise · Sistemas de Apoio à Decisão
+            </p>
+
+            <a href="index.html" class="back-top">
+                Voltar ao início
+            </a>
+
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>

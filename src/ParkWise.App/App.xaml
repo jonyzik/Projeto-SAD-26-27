@@ -7,6 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Theme.xaml" />
+                <ResourceDictionary Source="Styles/SimulationStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type vm:LoginViewModel}">
                 <views:LoginView />
@@ -28,6 +29,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:PlaceholderViewModel}">
                 <views:PlaceholderView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SimulationsViewModel}">
+                <views:SimulationsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:NewSimulationViewModel}">
+                <views:NewSimulationView />
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
